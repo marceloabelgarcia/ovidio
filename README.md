@@ -1,31 +1,18 @@
 # ovidio
 
-Web Components nativos + TypeScript + Vite + Tailwind + DaisyUI.
+Misma estructura y nombres que `widget/app`, sin Vue: custom elements + slots propios.
 
-## Arranque
+```
+src/
+  widget/          idéntico a widget/app/widget (Father, Resources, Mother,
+                   Widget, child/*, resolve/*) — .vue → .ts
+  catalogs/        type, verb, widgets, ui, ux, work, primitives
+  pages/           demos
+```
+
+Alias: `~/…` → `src/…` (como en el otro repo).
 
 ```bash
 npm install
 npm run dev
-```
-
-## Estructura
-
-```
-src/
-  lib/       utilidades (signal, h)
-  ux/        layout + slots (app-layout, section, card)
-  ui/        componentes (clock, counter, …)
-  pages/     home.html = composición anidada; home.ts = cableado
-  main.ts
-```
-
-Composición en HTML (como Vue, pero nativo):
-
-```html
-<ui-section title="…">
-  <ui-card title="…">
-    <p>contenido</p>
-  </ui-card>
-</ui-section>
 ```

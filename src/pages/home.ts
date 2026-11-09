@@ -1,40 +1,28 @@
-import template from './home.html?raw';
-import type { UiActions } from '../ui/actions/actions';
-import type { UiCard } from '../ux/card/card';
+import type { NodeWidget } from '~/catalogs/widgets'
+import type { Widget } from '~/widget/Widget'
 
-/** Monta el HTML de la página (composición) y cablea comportamiento. */
-export function HomePage(): HTMLElement {
-  const host = document.createElement('div');
-  host.innerHTML = template.trim();
-  const page = host.firstElementChild;
-  if (!(page instanceof HTMLElement)) {
-    throw new Error('home.html debe tener un elemento raíz');
-  }
+/** Igual que pages/widget/[_index].vue — `address` fijo (sin router). */
+const input = 'address'
 
-  wireDemoCard(page);
-  return page;
+const widget: NodeWidget = {
+  name: 'demo-address',
+  port: { input, output: 'save' },
+  children: [
+    {
+      name: 'editor',
+      template: 'Edit',
+      port: { input, output: 'save' },
+    },
+  ],
 }
 
-function wireDemoCard(page: HTMLElement) {
-  const card = page.querySelector('#demo-card') as UiCard | null;
-  const actions = page.querySelector('#demo-actions') as UiActions | null;
-  const mutate = page.querySelector('[data-mutate]');
-  const apply = page.querySelector('[data-apply]');
-  if (!card || !actions || !mutate || !apply) return;
+export function HomePage(): HTMLElement {
+  const wrap = document.createElement('div')
+  wrap.className = 'pl-12 max-w-lg'
 
-  let n = 0;
+  const node = document.createElement('widget-node') as Widget
+  node.widget = widget
+  wrap.append(node)
 
-  mutate.addEventListener('click', () => {
-    n += 1;
-    card.setAttribute('title', `Mutado #${n}`);
-    card.setAttribute('badge', `v${n}`);
-    actions.setNote(
-      'Attributes cambiados en el DOM, pero el UI del card no se enteró (sin reactividad de props).',
-    );
-  });
-
-  apply.addEventListener('click', () => {
-    card.applyProps();
-    actions.setNote('applyProps() leído a mano → ahora sí se ve el título/badge nuevos.');
-  });
+  return wrap
 }
