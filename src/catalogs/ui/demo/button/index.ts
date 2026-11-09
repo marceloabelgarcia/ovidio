@@ -1,13 +1,11 @@
 import { Mother } from '../../core/mother'
-
 import { Ux } from './ux'
-import { Button } from './button'
 
-
-export class Index {
+/** Nivel 1 — Mother(Ux); no conoce #app ni Demo. */
+export class Button {
   readonly mother: Mother
 
   constructor() {
-    this.mother = new Mother(new Ux(), new Button())
+    this.mother = new Mother(Ux)
   }
 }

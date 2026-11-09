@@ -1,12 +1,12 @@
 import { Mother } from '../core/mother'
-
 import { Container } from './container'
-import { Index } from './button'
+import { Button } from './button'
 
+/** Nivel 0 — Mother(Ux, children). */
 export class Demo {
   readonly mother: Mother
 
   constructor() {
-    this.mother = new Mother(new Container(), new Index())
+    this.mother = new Mother(Container, [Button])
   }
 }

@@ -1,11 +1,19 @@
+import { attach, release } from '../core/scope'
+
+/**
+ * Shell HTML del nivel Demo.
+ * attach abre el slot; close lo cierra cuando Mother terminó los hijos.
+ */
 export class Container {
-    readonly host = document.querySelector('#app')!
-  
-  
-    readonly container = document.createElement('div')  
-    constructor(readonly html: HTMLElement) {
-        this.container.appendChild(this.html)
-        this.container.className = 'm-2 container border border-black rounded-md p-4 h-64'
-        this.host.appendChild(this.container)
-    }
+  readonly el = document.createElement('div')
+
+  constructor() {
+    this.el.className =
+      'm-2 container border border-black rounded-md p-4 min-h-24'
+    attach(this.el)
+  }
+
+  close() {
+    release()
+  }
 }
