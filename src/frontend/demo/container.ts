@@ -7,7 +7,7 @@ export class Container {
 
   constructor() {
     this.el.className =
-      'm-2 container border border-black rounded-md p-4 min-h-24'
+      'm-2 container border border-black rounded-md p-4 min-h-24 flex flex-col gap-2 flex-shrink-0'
     attach(this.el)
   }
 
