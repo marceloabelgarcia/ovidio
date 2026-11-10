@@ -1,11 +1,9 @@
-import { Mother } from '../../core/mother'
+import { Widget } from '../../core/widget'
 import { Ux } from './ux'
 
-/** Nivel 1 — Mother(Ux); no conoce #app ni Demo. */
-export class Button {
-  readonly mother: Mother
-
+/** Nivel 1 — terminal HTML; sin hijos. */
+export class Button extends Widget {
   constructor() {
-    this.mother = new Mother(Ux)
+    super(Ux)
   }
 }

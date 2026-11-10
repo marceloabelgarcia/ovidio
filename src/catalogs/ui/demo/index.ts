@@ -1,12 +1,10 @@
-import { Mother } from '../core/mother'
+import { Widget } from '../core/widget'
 import { Container } from './container'
 import { Button } from './button'
 
-/** Nivel 0 — Mother(Ux, children). */
-export class Demo {
-  readonly mother: Mother
-
+/** Nivel 0 — alberga Button dentro de Container. */
+export class Demo extends Widget {
   constructor() {
-    this.mother = new Mother(Container, [Button])
+    super(Container, [Button])
   }
 }
