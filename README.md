@@ -16,8 +16,9 @@ Alias: `~/…` → `src/…`
 
 ```bash
 npm install
-npm run dev          # frontend (Vite)
-npm run dev:server   # backend (tsx)
+npm run dev          # frontend → http://127.0.0.1:5173/
+npm run dev:server   # backend  → http://127.0.0.1:8787/
 ```
 
-Frontend demo: `/` o `/button`
+- Frontend demo: `/` o `/button`
+- Server demo: `http://127.0.0.1:8787/` (o `/demo`)
