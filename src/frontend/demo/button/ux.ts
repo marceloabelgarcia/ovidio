@@ -1,9 +1,6 @@
-import { attach, release } from '../../core/scope'
+import { attach } from '~/frontend/dom/attach'
 
-/**
- * Shell HTML del nivel Button.
- * attach abre el slot; close lo cierra cuando Mother terminó los hijos.
- */
+/** Shell terminal: se cuelga del interior; no alberga. */
 export class Ux {
   readonly button = document.createElement('button')
 
@@ -14,9 +11,5 @@ export class Ux {
       console.log('button clicked')
     })
     attach(this.button)
-  }
-
-  close() {
-    release()
   }
 }

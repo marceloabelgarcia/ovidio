@@ -1,8 +1,8 @@
-import { Widget } from '../core/widget'
+import { Widget } from '~/core'
 import { Container } from './container'
 import { Button } from './button'
 
-/** Nivel 0 — alberga Button dentro de Container. */
+/** Demo frontend: Container alberga Button. */
 export class Demo extends Widget {
   constructor() {
     super(Container, [Button])

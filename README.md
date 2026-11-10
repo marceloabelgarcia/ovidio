@@ -1,18 +1,23 @@
 # ovidio
 
-Misma estructura y nombres que `widget/app`, sin Vue: custom elements + slots propios.
+Gramática Widget / Mother reutilizable en frontend y backend.
 
 ```
 src/
-  widget/          idéntico a widget/app/widget (Father, Resources, Mother,
-                   Widget, child/*, resolve/*) — .vue → .ts
-  catalogs/        type, verb, widgets, ui, ux, work, primitives
-  pages/           demos
+  core/              # portable (sin DOM): Widget, Mother, withInterior
+  frontend/
+    dom/             # attach → HTMLElement / #app
+    demo/            # ejemplo de widgets HTML
+  app/               # entrada Vite (browser)
+  server/            # Node + TS (tsx); demo lógico
 ```
 
-Alias: `~/…` → `src/…` (como en el otro repo).
+Alias: `~/…` → `src/…`
 
 ```bash
 npm install
-npm run dev
+npm run dev          # frontend (Vite)
+npm run dev:server   # backend (tsx)
 ```
+
+Frontend demo: `/` o `/button`

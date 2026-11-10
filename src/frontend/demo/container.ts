@@ -1,11 +1,9 @@
-import { attach, release } from '../core/scope'
+import { attach } from '~/frontend/dom/attach'
 
-/**
- * Shell HTML del nivel Demo.
- * attach abre el slot; close lo cierra cuando Mother terminó los hijos.
- */
+/** Shell HTML que alberga: ofrece interior a Mother. */
 export class Container {
   readonly el = document.createElement('div')
+  readonly interior = this.el
 
   constructor() {
     this.el.className =
@@ -14,6 +12,6 @@ export class Container {
   }
 
   close() {
-    release()
+    // nivel completo: hijos ya creados
   }
 }

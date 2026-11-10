@@ -4,7 +4,7 @@ type Ctor = new (...args: never[]) => unknown
 
 /**
  * Forma base de un nivel: Mother(Ux, children).
- * Los index concretos extienden Widget y pasan su shell + hijos.
+ * Portable: frontend y backend.
  */
 export class Widget {
   readonly mother: Mother

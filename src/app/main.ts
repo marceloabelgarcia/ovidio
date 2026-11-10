@@ -6,6 +6,6 @@ if (!app) throw new Error('#app no encontrado')
 
 const path = location.pathname.replace(/\/$/, '') || '/'
 
-if (path === '/button') {
+if (path === '/button' || path === '/') {
   ButtonLabPage()
-} 
+}

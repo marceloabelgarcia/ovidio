@@ -1,7 +1,7 @@
-import { Widget } from '../../core/widget'
+import { Widget } from '~/core'
 import { Ux } from './ux'
 
-/** Nivel 1 — terminal HTML; sin hijos. */
+/** Nivel terminal HTML. */
 export class Button extends Widget {
   constructor() {
     super(Ux)
