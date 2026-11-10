@@ -1,4 +1,4 @@
-import { Demo } from '~/catalogs/ui/demo'
+import { Demo } from '../widget/demo'
 
 export function ButtonLabPage(): void {
   new Demo()
