@@ -11,7 +11,7 @@ export class Button extends Widget {
     super(
       parent,
       ButtonContainer,
-      [],
+      () => [],
       port,
       [{ name: 'click', executed: 'clicked' }],
     )

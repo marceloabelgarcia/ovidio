@@ -22,15 +22,17 @@ export type ContainerClass = new (
 
 export class Widget {
   public readonly container: Container
+  public readonly children: Widget[]
 
   constructor(
     parent: Container,
     ContainerClass: ContainerClass,
-    public readonly children: Widget[],
-    public readonly port: Port,
+    createChildren: (host: Container) => Widget[] = () => [],
+    public readonly port: Port = {},
     triggers: Trigger[] = [],
   ) {
     this.container = new ContainerClass(parent, triggers, (verb) => this.onAction(verb))
+    this.children = createChildren(this.container)
   }
 
   /** Puente interno: sensor HTML → flujo del widget. */
