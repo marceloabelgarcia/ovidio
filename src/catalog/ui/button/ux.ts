@@ -1,19 +1,17 @@
-import { createNotice } from '~/core'
+import { createNotice, type Port } from '~/core'
 import { attach } from '~/frontend/dom/attach'
 
-/**
- * Shell terminal: se cuelga del interior; emite avisos a su Widget.
- */
 export class Ux {
   readonly button = document.createElement('button')
   readonly #notice = createNotice()
   readonly on = this.#notice.on
 
-  constructor() {
+  constructor(port: Port = {}) {
+    const verb = port.input ?? 'submitted'
     this.button.className = 'btn btn-primary'
-    this.button.textContent = 'Click me'
+    this.button.textContent = verb
     this.button.addEventListener('click', () => {
-      this.#notice.emit('click')
+      this.#notice.emit(verb)
     })
     attach(this.button)
   }

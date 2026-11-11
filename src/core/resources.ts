@@ -1,20 +1,38 @@
+import type { Father } from './father'
+import {
+  matchesClosure,
+  outputParts,
+  type Port,
+  type TypePart,
+} from './port'
 import type { PrimitiveEvent, Trigger, Triggers } from './types'
 
 export type ResourceEntry = {
   id: symbol
-  /** Predicados a los que está cableado (port.input, …). */
   types: string[]
   triggers?: Triggers
 }
 
 /**
- * Artefacto de Father.
- * — values[type] = value
- * — triggers suscritos por hijos (Input, Output, …)
+ * Inventario del nivel.
+ * — values[type]
+ * — triggers de hijos
+ * — outputs: cuándo y con qué verbo avisar al padre
  */
 export class Resources {
   readonly values: Record<string, unknown> = {}
   readonly #entries: ResourceEntry[] = []
+  #outputs: TypePart[] = []
+  #father?: Father
+
+  connect(father: Father): void {
+    this.#father = father
+  }
+
+  /** Declara cierres del nivel (desde port.output). */
+  setOutputs(output?: Port['output']): void {
+    this.#outputs = outputParts(output)
+  }
 
   set(type: string, value: unknown): void {
     this.values[type] = value
@@ -34,10 +52,13 @@ export class Resources {
     return id
   }
 
-  /**
-   * Ejecuta triggers del verbo.
-   * Omite al dueño del aviso (`except`) y entradas que no comparten el type.
-   */
+  accept(event: PrimitiveEvent, from?: symbol): void {
+    if (event.type != null && event.type !== 'trigger') {
+      this.set(event.type, event.value)
+    }
+    this.#father?.onAlert(event, from)
+  }
+
   runTriggers(
     verb: string,
     event: PrimitiveEvent,
@@ -47,6 +68,7 @@ export class Resources {
       if (entry.id === except) continue
       if (
         event.type != null &&
+        event.type !== 'trigger' &&
         entry.types.length > 0 &&
         !entry.types.includes(event.type)
       ) {
@@ -55,5 +77,12 @@ export class Resources {
       const run: Trigger | undefined = entry.triggers?.[verb]
       run?.(event)
     }
+  }
+
+  /**
+   * Cierres que este evento dispara → Father emite al padre con verb = name.
+   */
+  closuresFor(event: PrimitiveEvent): TypePart[] {
+    return this.#outputs.filter((part) => matchesClosure(part, event))
   }
 }

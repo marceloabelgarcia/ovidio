@@ -2,22 +2,31 @@ import type { Resources } from './resources'
 import type { Emit, PrimitiveEvent } from './types'
 
 /**
- * Jefe del nivel — usa Resources.
- * 1. Guarda values[type] = value
- * 2. Ejecuta triggers del verbo (excepto quien avisó)
- * 3. Opcional: asciende el mismo relato
+ * Father — ejecuta triggers locales y, si port.output aplica, avisa al padre
+ * con la palabra nueva del cierre (loaded, success, error…).
  */
 export class Father {
   constructor(
     readonly resources: Resources,
     private readonly emitUp?: Emit,
-  ) {}
+  ) {
+    this.resources.connect(this)
+  }
 
-  receive(event: PrimitiveEvent, from?: symbol): void {
-    if (event.type != null) {
-      this.resources.set(event.type, event.value)
-    }
+  onAlert(event: PrimitiveEvent, from?: symbol): void {
+    console.log('[father]', event.subject, event.verb, event.type ?? '', {
+      value: event.value ?? null,
+      values: { ...this.resources.values },
+    })
+
     this.resources.runTriggers(event.verb, event, from)
-    this.emitUp?.(event)
+
+    // Solo sube si hay cierre declarado en port.output
+    for (const closure of this.resources.closuresFor(event)) {
+      this.emitUp?.({
+        ...event,
+        verb: closure.name,
+      })
+    }
   }
 }

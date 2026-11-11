@@ -1,7 +1,6 @@
 import { createNotice, type Port } from '~/core'
 import { attach } from '~/frontend/dom/attach'
 
-/** Shell Input string: sube changed; puede recibir apply. */
 export class Ux {
   readonly input = document.createElement('input')
   readonly #notice = createNotice()

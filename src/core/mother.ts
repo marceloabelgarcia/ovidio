@@ -1,25 +1,47 @@
 import { withInterior } from './scope'
 import type { Notice } from './notice'
 import type { Port } from './port'
+import type { PrimitiveEvent } from './types'
 
 type UxCtor = new (port?: Port) => unknown
 type ChildCtor = new (port?: Port) => unknown
 
-/** Hijo suelto, o hijo + port al presentarlo. */
-export type ChildSpec = ChildCtor | [ChildCtor, Port]
+/** Hijo ya decidido por la combinación (se nace dentro del level del padre). */
+export type ChildCreate = { create: () => unknown }
 
-/** Shell: carcasa del nivel. */
+/** Clase, [clase, port], o create: () => new Pieza(...). */
+export type ChildSpec = ChildCtor | [ChildCtor, Port] | ChildCreate
+
+type MachineEvent = 'sending' | 'sended'
+
+export type ShellApi = {
+  port: Port
+  notifyMachine: (happened: MachineEvent, detail?: unknown) => void
+  notifyParent: (event: PrimitiveEvent) => void
+}
+
 export type Shell = {
   interior?: unknown
   close?: () => void
   on?: (listener: Notice) => void
-  /** Baja un valor al artefacto (trigger changed, …). */
   apply?: (value: unknown) => void
+  busy?: (on: boolean) => void
+  react?: (event: PrimitiveEvent, api: ShellApi) => void
+}
+
+function spawn(spec: ChildSpec): unknown {
+  if (typeof spec === 'object' && spec !== null && 'create' in spec) {
+    return spec.create()
+  }
+  if (Array.isArray(spec)) {
+    const [Child, childPort] = spec
+    return new Child(childPort)
+  }
+  return new spec()
 }
 
 /**
- * Mother(UxClass, children, port?).
- * children: Class | [Class, port]
+ * Mother — Ux de este nivel + hijos (nacen aquí, con el padre ya en level).
  */
 export class Mother {
   readonly ux: Shell
@@ -32,12 +54,7 @@ export class Mother {
 
     const build = () => {
       for (const spec of Children) {
-        if (Array.isArray(spec)) {
-          const [Child, childPort] = spec
-          this.children.push(new Child(childPort))
-        } else {
-          this.children.push(new spec())
-        }
+        this.children.push(spawn(spec))
       }
     }
 
@@ -48,5 +65,9 @@ export class Mother {
     }
 
     this.ux.close?.()
+  }
+
+  static tell(artifact: string, happened: string, detail?: unknown): void {
+    console.log('[mother]', artifact, happened, detail ?? '')
   }
 }

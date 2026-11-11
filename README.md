@@ -1,24 +1,21 @@
 # ovidio
 
-Gramática Widget / Mother reutilizable en frontend y backend.
+Gramática Widget / Mother. Catálogo semántico + app runtime.
 
 ```
 src/
-  core/              # portable (sin DOM): Widget, Mother, withInterior
-  frontend/
-    dom/             # attach → HTMLElement / #app
-    demo/            # ejemplo de widgets HTML
-  app/               # entrada Vite (browser)
-  server/            # Node + TS (tsx); demo lógico
+  core/                 # invariante
+  catalog/
+    ui/                 # input, output, button, container
+    work/               # fetch, get (get combina fetch)
+    demo/               # combinado
+  frontend/dom/         # attach DOM
+  app/                  # runtime (enciende)
+  server/               # Node
 ```
-
-Alias: `~/…` → `src/…`
 
 ```bash
 npm install
-npm run dev          # frontend → http://127.0.0.1:5173/
-npm run dev:server   # backend  → http://127.0.0.1:8787/
+npm run dev          # http://127.0.0.1:5173/
+npm run dev:server   # http://127.0.0.1:8787/
 ```
-
-- Frontend demo: `/` o `/button`
-- Server demo: `http://127.0.0.1:8787/` (o `/demo`)

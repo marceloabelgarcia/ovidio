@@ -1,15 +1,16 @@
 import { Father } from './father'
 import { currentLevel, withLevel } from './level'
-import { Mother, type ChildSpec } from './mother'
+import { Mother, type ChildSpec, type ShellApi } from './mother'
 import type { Port } from './port'
 import { Resources } from './resources'
-import type { PrimitiveEvent } from './types'
+import { subjects, type PrimitiveEvent } from './types'
 
 type UxCtor = new (port?: Port) => unknown
+type MachineEvent = 'sending' | 'sended'
 
 /**
- * Nivel: Mother (carcasa) + Resources/Father (datos).
- * Con port.input se registra en el Resources del padre.
+ * Contenedor: Mother + Resources + Father.
+ * port.output vive en Resources → Father decide cuándo emitUp.
  */
 export class Widget {
   readonly mother: Mother
@@ -17,61 +18,101 @@ export class Widget {
   readonly resources: Resources
   readonly father: Father
   readonly #id = Symbol(this.constructor.name)
-  readonly #emitToParent?: (event: PrimitiveEvent) => void
+  readonly #parent?: Widget
 
   constructor(Ux: UxCtor, Children: ChildSpec[] = [], port: Port = {}) {
     this.port = port
     this.resources = new Resources()
-    this.father = new Father(this.resources, (e) => this.ascend(e))
+    this.resources.setOutputs(port.output)
+    this.father = new Father(this.resources, (e) => this.#ascend(e))
 
     const parent = currentLevel()
-    const type = port.input
+    this.#parent = parent?.widget
 
-    if (parent && type) {
+    if (parent && port.trigger) {
       parent.resources.register({
         id: this.#id,
-        types: [type],
+        types: port.input ? [port.input] : [],
         triggers: {
-          changed: (event) => this.pull(event),
+          [port.trigger]: (event) => this.#deliver(event),
         },
       })
-      this.#emitToParent = (event) => parent.father.receive(event, this.#id)
     }
 
     let mother!: Mother
-    withLevel({ resources: this.resources, father: this.father }, () => {
-      mother = new Mother(Ux, Children, port)
-    })
+    withLevel(
+      { resources: this.resources, father: this.father, widget: this },
+      () => {
+        mother = new Mother(Ux, Children, port)
+      },
+    )
     this.mother = mother
 
-    this.mother.ux.on?.((event, payload) => this.heard(event, payload))
+    this.mother.ux.on?.((verb, payload) => this.#fromShell(verb, payload))
 
-    // Si el padre ya tiene valor para este type, bajarlo
-    if (parent && type && parent.resources.values[type] !== undefined) {
-      this.pull({
-        verb: 'changed',
+    const type = port.input
+    if (
+      parent &&
+      port.trigger &&
+      type &&
+      parent.resources.values[type] !== undefined
+    ) {
+      this.#deliver({
+        subject: subjects.user,
+        verb: port.trigger,
         type,
         value: parent.resources.values[type],
       })
     }
   }
 
-  /** Aviso de la carcasa → subir al Father del padre (si hay port). */
-  protected heard(event: string, payload?: unknown): void {
-    const type = this.port.input
-    if (!type || !this.#emitToParent) return
-    if (event === 'changed' || event === 'input') {
-      this.#emitToParent({ verb: 'changed', type, value: payload })
+  #shellApi(): ShellApi {
+    return {
+      port: this.port,
+      notifyMachine: (h, d) => this.#notifyMachine(h, d),
+      notifyParent: (e) => this.#emit(e),
     }
   }
 
-  /** Trigger descendente: Resources avisó un changed de nuestro type. */
-  protected pull(event: PrimitiveEvent): void {
+  #deliver(event: PrimitiveEvent): void {
+    this.mother.ux.react?.(event, this.#shellApi())
     this.mother.ux.apply?.(event.value)
+    this.resources.runTriggers(event.verb, event)
   }
 
-  /** Relato que asciende desde este nivel (demo: log). */
-  protected ascend(event: PrimitiveEvent): void {
-    console.log('[ascend]', this.constructor.name, event)
+  #fromShell(verb: string, payload?: unknown): void {
+    if (!this.port.input || !this.#parent) return
+
+    Mother.tell(this.constructor.name.toLowerCase(), verb, payload)
+
+    const action = verb === this.port.input
+    this.#emit({
+      subject: subjects.user,
+      verb,
+      type: action ? 'trigger' : this.port.input,
+      value: action ? null : payload,
+    })
+  }
+
+  #emit(event: PrimitiveEvent): void {
+    if (this.#parent) {
+      this.#parent.resources.accept(event, this.#id)
+    } else {
+      this.resources.accept(event, this.#id)
+    }
+  }
+
+  #ascend(event: PrimitiveEvent): void {
+    this.#parent?.resources.accept(event, this.#id)
+  }
+
+  #notifyMachine(happened: MachineEvent, detail?: unknown): void {
+    Mother.tell(this.constructor.name.toLowerCase(), happened, detail)
+    this.bubbleBusy(happened === 'sending')
+  }
+
+  bubbleBusy(on: boolean): void {
+    this.mother.ux.busy?.(on)
+    this.#parent?.bubbleBusy(on)
   }
 }

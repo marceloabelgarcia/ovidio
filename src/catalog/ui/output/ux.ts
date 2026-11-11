@@ -1,7 +1,6 @@
 import type { Port } from '~/core'
 import { attach } from '~/frontend/dom/attach'
 
-/** Shell Output string: solo baja el valor (trigger changed). */
 export class Ux {
   readonly output = document.createElement('output')
 
