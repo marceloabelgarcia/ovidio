@@ -29,8 +29,12 @@ export class Widget {
     public readonly children: Widget[],
     public readonly port: Port,
     triggers: Trigger[] = [],
-    onAction: OnAction = () => {},
   ) {
-    this.container = new ContainerClass(parent, triggers, onAction)
+    this.container = new ContainerClass(parent, triggers, (verb) => this.onAction(verb))
+  }
+
+  /** Puente interno: sensor HTML → flujo del widget. */
+  protected onAction(verb: string): void {
+    console.log('widget action', verb)
   }
 }

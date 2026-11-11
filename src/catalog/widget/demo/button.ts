@@ -7,7 +7,9 @@ class DemoContainer extends Container {
   constructor(
     parent: Container,
     triggers: Trigger[] = [],
-    onAction: OnAction = () => {},
+    onAction: OnAction = (verb: string) => {
+        console.log('clicked ', verb)
+    },
   ) {
     super(parent, document.createElement('div'), triggers, onAction)
   }
@@ -19,10 +21,7 @@ class DemoContainer extends Container {
  */
 export class ButtonDemo extends Widget {
   constructor(root: Container) {
-    const button = new Button(root, (verb: string) => {
-      console.log('clicked ', verb)
-    })
-
+    const button = new Button(root)
     super(root, DemoContainer, [button], {})
   }
 }
