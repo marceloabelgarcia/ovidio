@@ -1,8 +1,8 @@
-import { Container } from '~/catalog/widget/container'
+import { HtmlContainer } from '~/catalog/widget/html-container'
 import { ButtonDemo } from '~/catalog/widget/demo/button'
 
 /** Contenedor raíz de la page (#app). */
-export class AppContainer extends Container {
+export class AppContainer extends HtmlContainer {
   constructor(app: HTMLElement) {
     super(null, app)
   }

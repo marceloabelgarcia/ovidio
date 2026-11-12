@@ -1,6 +1,7 @@
 import { ButtonContainer } from './container'
 import { Container } from '../container'
-import { Port, Widget } from '../widget'
+import { Widget } from '../widget'
+import { Port } from '../types'
 
 /** Leaf: parent ya instanciado; pasa ButtonContainer (clase) a Widget. Sin hijos. */
 export class Button extends Widget {
@@ -11,9 +12,9 @@ export class Button extends Widget {
     super(
       parent,
       ButtonContainer,
-      () => [],
+      [],
       port,
-      [{ name: 'click', executed: 'clicked' }],
+      [{ name: 'click', completed: 'clicked' }],
     )
   }
 }
