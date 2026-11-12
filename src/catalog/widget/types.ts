@@ -1,4 +1,4 @@
-
+import { HtmlContainer } from './html-container'
 
 export type Port = {
     input?: TypePart[] | string
@@ -35,7 +35,7 @@ export type Output =
     {
         trigger: Trigger,
         type: string,
-        value: unknown | string,    
+        value?: HtmlContainer | string | undefined,
     }
 
 export type OnAction = (output: Output) => void

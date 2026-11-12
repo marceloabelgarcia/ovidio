@@ -7,8 +7,6 @@ export class Container {
   constructor(
     readonly parent: Container | null,
     private readonly onAction: OnAction = () => {},
-    value: unknown,
-    type: string = 'string',
   ) {}
 
   /** Sensor propio: avisa a su Widget y sube por containers. */
@@ -23,6 +21,10 @@ export class Container {
    */
   onChildAction(output: Output): void {
     this.parent?.onChildAction(output)
+  }
+
+  setValue(value: unknown): void {
+    console.log('SET VALUE: ', value);
   }
 
 

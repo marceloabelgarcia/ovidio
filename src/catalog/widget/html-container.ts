@@ -9,22 +9,22 @@ export class HtmlContainer extends Container {
     readonly element: HTMLElement,
     triggers: Trigger[] = [],
     onAction: OnAction = () => {},
-    value: unknown,
+    value?: HtmlContainer | string | undefined,
     type: string = 'string',
   ) {
-    super(parent, onAction, value, type)
-
-    console.log(triggers);
+    super(parent, onAction)
 
     triggers.forEach((trigger) => {
-      element.addEventListener(trigger.name, () => {
-        console.log(trigger.completed);
-        this.handleAction({ trigger: trigger, type, value })
+      element.addEventListener(trigger.name, ($event: Event) => {
+        this.handleAction({ trigger: trigger, type, value: ($event.target as HTMLInputElement).value as string })
       })
     })
 
     if (parent instanceof HtmlContainer) {
       parent.element.appendChild(element)
     }
+    
   }
+
+
 }

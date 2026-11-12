@@ -8,7 +8,7 @@ export class InputContainer extends HtmlContainer {
     parent: Container,
     triggers: Trigger[] = [],
     onAction: OnAction = () => {},
-    value: unknown,
+    value: string | HtmlContainer | undefined,
     type: string = 'string',
   ) {
     const input = document.createElement('input')
