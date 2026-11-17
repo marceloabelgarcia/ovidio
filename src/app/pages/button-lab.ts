@@ -1,4 +1,4 @@
-import { DemoContainer } from 'catalog/html/demo/container'
+import { DemoContainer } from 'catalog/html/demo/'
 import { AppContainer } from 'catalog/html/core/app-container'
 
 

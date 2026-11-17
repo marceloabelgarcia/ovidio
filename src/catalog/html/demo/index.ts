@@ -1,6 +1,6 @@
-import { ButtonContainer } from '../ui/button/container'
-import { DisplayContainer } from '../ui/display/container'
-import { InputContainer } from '../ui/input/container'
+import { ButtonContainer } from '../catalog/ui/button/'
+import { DisplayContainer } from '../catalog/ui/display/'
+import { InputContainer } from '../catalog/ui/input/'
 import { Container } from 'core/container'
 import { TypePart, Verb } from 'core/types'
 

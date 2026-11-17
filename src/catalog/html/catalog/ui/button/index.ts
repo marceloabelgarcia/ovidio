@@ -34,7 +34,7 @@ export class ButtonContainer extends HtmlContainer {
         event: { action, state: 'completed', time: new Date() },
         resource,
       }
-      this.dispatched(output)
+      this.dispatch(output)
     })
   }
 }

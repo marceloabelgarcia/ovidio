@@ -21,6 +21,8 @@ export class Container {
 
 
   dispatched(output: Output): void {
+
+    console.log(this)
     // guardar recurso
     const { value, type } = output.resource
     this.resources[type] = value
@@ -28,13 +30,12 @@ export class Container {
     // ejecutar triggers
     const { action, state } = output.event
     const trigger = action[state]
-    const brothers = this.parent?.children.filter(child => child !== this && child.port.trigger === trigger)
+    const brothers = this.children.filter(child => child !== this && child.port.trigger === trigger)
     brothers?.forEach(brother => brother.execute(output.resource))
 
     // avisar al padre
     console.log(this)
   }
 
-
-  execute(_resource?: Resource): void {}
+  execute(_resource?: Resource): void { }
 }

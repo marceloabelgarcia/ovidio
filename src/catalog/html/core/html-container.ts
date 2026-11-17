@@ -1,5 +1,5 @@
 import { Container } from 'core/container'
-import { Port } from 'core/types'
+import { Output, Port } from 'core/types'
 
 
 export class HtmlContainer extends Container {
@@ -17,6 +17,10 @@ export class HtmlContainer extends Container {
     if (child instanceof HtmlContainer) {
       this.element.appendChild(child.element)
     }
+  }
+
+  public dispatch(output: Output): void {
+    this.parent?.dispatched(output)
   }
 
 }
