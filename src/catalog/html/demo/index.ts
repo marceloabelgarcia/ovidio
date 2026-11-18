@@ -1,36 +1,39 @@
 import { ButtonContainer } from '../catalog/ui/button/'
 import { DisplayContainer } from '../catalog/ui/display/'
 import { InputContainer } from '../catalog/ui/input/'
-import { App } from '../catalog/ux/app/'
+import { AppContainer } from '../catalog/ux/app/app-container'
+import { Widget } from 'core/widget'
 
 /**
- * App (Widget) → mother = AppContainer → hijos de la demo.
+ * Nivel demo (Widget) cuya mother es AppContainer.
  */
-export function Demo(el: HTMLElement): void {
-    new App(
-        el,
-        [
-            new ButtonContainer(),
-            new DisplayContainer({
-                input: 'name',
-                trigger: 'changed',
-            }),
-            new InputContainer({
-                input: 'name',
-            }),
-        ],
-        {
-            input: 'street',
-            output: [
-                {
-                    name: 'modified',
-                    type: [{ name: 'changed', type: 'string' }],
-                },
-                {
-                    name: 'saved',
-                    type: [{ name: 'submitted', type: 'string' }],
-                },
+export class Demo extends Widget {
+    constructor(el: HTMLElement) {
+        super(
+            [
+                new ButtonContainer(),
+                new DisplayContainer({
+                    input: 'name',
+                    trigger: 'changed',
+                }),
+                new InputContainer({
+                    input: 'name',
+                }),
             ],
-        },
-    )
+            new AppContainer(el),
+            {
+                input: 'street',
+                output: [
+                    {
+                        name: 'modified',
+                        type: [{ name: 'changed', type: 'string' }],
+                    },
+                    {
+                        name: 'saved',
+                        type: [{ name: 'submitted', type: 'string' }],
+                    },
+                ],
+            },
+        )
+    }
 }
