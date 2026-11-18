@@ -1,4 +1,4 @@
-import { Output, Port, Resource, Event, Action, TypePart } from './types'
+import { Output, Port, Resource, Action, TriggerRelation, State, TypePart } from './types'
 
 export class Container {
   public parent: Container | null = null
@@ -22,45 +22,36 @@ export class Container {
 
 
   dispatched(output: Output): void {
-    console.log('LLEGO!! ', output.event.action.completed, this)
     // guardar recurso
     const { value, type } = output.resource
     this.resources[type] = value
 
+
     // ejecutar triggers
-    const { action, state } = output.event
-    const trigger = action[state]
-    const brothers = this.children.filter(child => child !== this && child.port.trigger === trigger)
+    const brothers = this.children.filter(child => child !== this && child.port.trigger === output.event.trigger)
     brothers?.forEach(brother => brother.execute(output.resource))
 
+
     // avisar al padre
-    const outputs = this.port.output
-
-    outputs?.forEach((relation) => {
-      const { name, type } = relation
+    this.port.output?.forEach((relation: TriggerRelation) => {
+      const { trigger, triggers } = relation;
       
-      Array.isArray(type) && type.forEach((typePart: TypePart) => {
+      triggers.forEach((action: Action) => {
 
-        if (typePart.name === trigger) {
-          const event: Event = {
-            action: {
-              action: name,
-              actor: 'system',
-              inProgress: name,
-              completed: name,
-            } as Action,
-            state: 'completed',
-            time: new Date(),
-          }
-          const resource = {
-            type: typePart.type,
-            value: value,
-          } as Resource
- 
+        const state: State = output.event.trigger.state as State
+        if (action[state] === output.event.trigger.action[state]) {
+
+          console.log(this.resources)
           this.parent?.dispatched(
             {
-              event: event,
-              resource: resource,
+              event: {
+                trigger: trigger,
+                time: new Date(),
+              },
+              resource: {
+                type: this.port.input as TypePart["name"],
+                value: this.resources,
+              },
             } as Output
           )
         }

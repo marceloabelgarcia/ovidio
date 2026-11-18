@@ -12,15 +12,15 @@ const submit: Verb = {
 export class ButtonContainer extends HtmlContainer {
   constructor(
     action: Action = {
-      action: submit.name,
+      verb: submit.name,
       actor: submit.noun,
-      inProgress: submit.gerund,
-      completed: submit.participle,
+      progress: submit.gerund,
+      finished: submit.participle,
     },
   ) {
     const button = document.createElement('button')
     button.className = 'btn btn-primary'
-    button.textContent = action.action
+    button.textContent = action.verb
 
     super(button, [])
 
@@ -31,7 +31,7 @@ export class ButtonContainer extends HtmlContainer {
       }
 
       const output: Output = {
-        event: { action, state: 'completed', time: new Date() },
+        event: { trigger: { action, state: 'finished' }, time: new Date() },
         resource,
       }
       this.dispatch(output)

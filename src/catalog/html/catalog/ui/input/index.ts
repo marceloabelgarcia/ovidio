@@ -1,5 +1,5 @@
 import { HtmlContainer } from 'catalog/html/core/html-container'
-import { Action, Output, Port, Resource, Verb } from 'core/types'
+import { Action, Output, Port, Resource, TypePart, Verb } from 'core/types'
 
 const change: Verb = {
   name: 'change',
@@ -13,10 +13,10 @@ export class InputContainer extends HtmlContainer {
   constructor(
     port: Port = {},
     action: Action = {
-      action: change.name,
+      verb: change.name,
       actor: change.noun,
-      inProgress: change.gerund,
-      completed: change.participle,
+      progress: change.gerund,
+      finished: change.participle,
     },
   ) {
     const input = document.createElement('input')
@@ -26,12 +26,12 @@ export class InputContainer extends HtmlContainer {
 
     input.addEventListener('change', ($event: Event) => {
       const resource: Resource = {
-        type: 'string',
+        type: port.input as TypePart["name"],
         value: ($event.target as HTMLInputElement).value,
       }
 
       const output: Output = {
-        event: { action, state: 'completed', time: new Date() },
+        event: { trigger: { action, state : 'finished'}, time: new Date() },
         resource,
       }
       this.dispatch(output)

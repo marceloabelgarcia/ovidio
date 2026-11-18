@@ -1,4 +1,8 @@
 
+export type TypePart = {
+    name: string
+    type: string | TypePart[]
+}
 
 export type Verb = {
     name: string
@@ -7,41 +11,40 @@ export type Verb = {
     participle: string
 };
 
-export type State = 'inProgress' | 'completed'
+export type State = 'runing' | 'finished' | 'verb' | 'actor'
 
-
-export type Port = {
-    input?: TypePart[] | string
-    output?: TypePart[]
-    trigger?: Trigger | string
-    [key: string]: string | TypePart | TypePart[] | string[] | Trigger | string[] | undefined
-}
 
 
 export type Action = {
-    action: Verb["name"];
+    verb: Verb["name"];
     actor: Verb["noun"];
-    inProgress: Verb["gerund"];
-    completed: Verb["participle"];
+    progress: Verb["gerund"];
+    finished: Verb["participle"];
+    [key: string]: Verb["name"] | Verb["gerund"] | Verb["participle"] | undefined
 };
 
 export type Trigger = {
-    name: Action["action"]
-    completed: Action["completed"]
-}
-
-
-export type Event = {
     action: Action
     state: State
+}
+
+export type TriggerRelation = {
+    trigger: Trigger,
+    triggers: Action[]
+}
+
+export type Port = {
+    input?: TypePart[] | string
+    output?: TriggerRelation[]
+    trigger?: Trigger
+    [key: string]: TriggerRelation[] | TypePart[] | Trigger | string | undefined
+}
+
+export type Event = {
+    trigger: Trigger
     time: Date
 }
 
-
-export type TypePart = {
-    name: string
-    type: string | TypePart[]
-}
 
 export type Resource = {
     type: TypePart["name"]
@@ -54,6 +57,5 @@ export type Output =
         resource: Resource
     }
 
-export type OnAction = (output: Output) => void
 
 
