@@ -1,4 +1,4 @@
-import { Output, Port, Resource } from './types'
+import { Output, Port, Resource, Event, Action, TypePart } from './types'
 
 export class Container {
   public parent: Container | null = null
@@ -22,7 +22,7 @@ export class Container {
 
 
   dispatched(output: Output): void {
-    console.log(output.event.action.completed, this)
+    console.log('LLEGO!! ', output.event.action.completed, this)
     // guardar recurso
     const { value, type } = output.resource
     this.resources[type] = value
@@ -38,21 +38,35 @@ export class Container {
 
     outputs?.forEach((relation) => {
       const { name, type } = relation
-      type?.forEach((typePart) => {
-        
+      
+      Array.isArray(type) && type.forEach((typePart: TypePart) => {
+
         if (typePart.name === trigger) {
-          console.log('avisar al padre')
-          const event = {
-            action: action,
-            state: state,
+          const event: Event = {
+            action: {
+              action: name,
+              actor: 'system',
+              inProgress: name,
+              completed: name,
+            } as Action,
+            state: 'completed',
             time: new Date(),
           }
-          console.log('avisar al padre', this);
-          this.parent?.dispatched(event)
+          const resource = {
+            type: typePart.type,
+            value: value,
+          } as Resource
+ 
+          this.parent?.dispatched(
+            {
+              event: event,
+              resource: resource,
+            } as Output
+          )
         }
       })
     })
-    
+
   }
 
   execute(_resource?: Resource): void { }

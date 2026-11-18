@@ -2,14 +2,20 @@ import { ButtonContainer } from '../catalog/ui/button/'
 import { DisplayContainer } from '../catalog/ui/display/'
 import { InputContainer } from '../catalog/ui/input/'
 import { AppContainer } from '../catalog/ux/app/app-container'
+import { View } from '../catalog/ux/view/'
 import { Widget } from 'core/widget'
 
 /**
- * Nivel demo (Widget) cuya mother es AppContainer.
+ * Demo (Widget)
+ *   └── mother = AppContainer
+ *         └── ViewContainer (mother de View)
+ *               ├── Button
+ *               ├── Display
+ *               └── Input
  */
 export class Demo extends Widget {
     constructor(el: HTMLElement) {
-        super(
+        const view = new View(
             [
                 new ButtonContainer(),
                 new DisplayContainer({
@@ -20,7 +26,6 @@ export class Demo extends Widget {
                     input: 'name',
                 }),
             ],
-            new AppContainer(el),
             {
                 input: 'street',
                 output: [
@@ -35,5 +40,7 @@ export class Demo extends Widget {
                 ],
             },
         )
+
+        super([view.mother], new AppContainer(el))
     }
 }
