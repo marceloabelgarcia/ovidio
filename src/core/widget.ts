@@ -15,7 +15,6 @@ export class Widget extends Container {
     this.mother = mother ?? this
 
     if (!own) {
-      // Contrato del nivel en la mother (antes quedaba huérfano en Widget)
       this.mother.port = port
       for (const child of children) {
         this.mother.appendChild(child)
