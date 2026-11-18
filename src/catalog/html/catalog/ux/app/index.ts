@@ -4,11 +4,8 @@ import { Port } from 'core/types'
 import { Widget } from 'core/widget'
 
 /**
- * Primitiva raíz HTML: Widget cuyo mother es AppContainer (#app → runtime).
- *
- *   App (Widget)
- *     └── mother = AppContainer
- *           └── children
+ * App de catálogo: Widget con hueco vacío (AppContainer).
+ * Los hijos se alojan después al usarla como mother.
  */
 export class App extends Widget {
   constructor(

@@ -1,14 +1,11 @@
 import { ViewContainer } from './view-container'
-import { Container } from 'core/index'
+import { Container } from 'core/container'
 import { Port } from 'core/types'
-import { Widget } from 'core/index'
+import { Widget } from 'core/widget'
 
 /**
- * Primitiva de vista: Widget cuyo mother es ViewContainer.
- *
- *   View (Widget)
- *     └── mother = ViewContainer
- *           └── children
+ * View de catálogo: Widget con hueco vacío (ViewContainer).
+ * Los hijos se alojan después al usarla como mother.
  */
 export class View extends Widget {
   constructor(
