@@ -7,7 +7,8 @@ export class Container {
 
   constructor(
     children: Container[] = [],
-    protected readonly port: Port = {},
+    /** Contrato de este contenedor (mutable: el nivel puede fijarlo en la mother). */
+    public port: Port = {},
   ) {
     for (const child of children) {
       this.appendChild(child)
@@ -21,8 +22,6 @@ export class Container {
 
 
   dispatched(output: Output): void {
-
-    console.log(this)
     // guardar recurso
     const { value, type } = output.resource
     this.resources[type] = value
@@ -34,7 +33,27 @@ export class Container {
     brothers?.forEach(brother => brother.execute(output.resource))
 
     // avisar al padre
-    console.log(this)
+    const outputs = this.port.output
+
+    outputs?.forEach((relation) => {
+      const { name, type } = relation
+      type?.forEach((typePart) => {
+        
+        if (typePart.name === trigger) {
+          console.log('avisar al padre')
+          const event = {
+            action: action,
+            state: state,
+            time: new Date(),
+          }
+          this.parent?.dispatched(event)
+
+          console.log(this)
+        }
+      })
+      console.log(name, type)
+    })
+    
   }
 
   execute(_resource?: Resource): void { }

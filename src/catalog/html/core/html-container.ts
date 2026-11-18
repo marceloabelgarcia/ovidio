@@ -3,12 +3,19 @@ import { Output, Port } from 'core/types'
 
 
 export class HtmlContainer extends Container {
+  public readonly element: HTMLElement
+
   constructor(
-    public readonly element: HTMLElement,
+    element: HTMLElement,
     children: Container[] = [],
     port: Port = {},
   ) {
-    super(children, port)
+    // element debe existir antes de adoptar hijos (super no puede montar aún)
+    super([], port)
+    this.element = element
+    for (const child of children) {
+      this.appendChild(child)
+    }
   }
 
   /** Adopta hijo en el árbol y en el DOM. */
@@ -24,4 +31,3 @@ export class HtmlContainer extends Container {
   }
 
 }
-
