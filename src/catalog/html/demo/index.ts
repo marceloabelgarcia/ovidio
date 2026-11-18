@@ -3,7 +3,7 @@ import { DisplayContainer } from '../catalog/ui/display/'
 import { InputContainer } from '../catalog/ui/input/'
 import { AppContainer } from '../catalog/ux/app/app-container'
 import { View } from '../catalog/ux/view/'
-import { Widget } from 'core/widget'
+import { Widget } from 'core/index'
 import { TriggerRelation, Action, TypePart } from 'core/types'
 
 

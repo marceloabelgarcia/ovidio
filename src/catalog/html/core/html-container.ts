@@ -1,4 +1,4 @@
-import { Container } from 'core/container'
+import { Container } from 'core/index'
 import { Output, Port } from 'core/types'
 
 

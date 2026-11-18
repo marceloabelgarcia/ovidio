@@ -22,21 +22,34 @@ export class Container {
 
 
   dispatched(output: Output): void {
+
+    console.log(output)
+
     // guardar recurso
     const { value, type } = output.resource
     this.resources[type] = value
 
 
     // ejecutar triggers
-    const brothers = this.children.filter(child => child !== this && child.port.trigger === output.event.trigger)
-    brothers?.forEach(brother => brother.execute(output.resource))
+    const brothers = this.children.filter(
+      (child) => {
+        const state = output.event.trigger.state as State
+        return child.port.trigger?.action[state] === output.event.trigger.action[state]
+      }
+    )
+
+    brothers.forEach((brother) => {
+      brother.execute(output.resource)
+    })
 
 
     // avisar al padre
     this.port.output?.forEach((relation: TriggerRelation) => {
       const { trigger, triggers } = relation;
-      
+
+
       triggers.forEach((action: Action) => {
+
 
         const state: State = output.event.trigger.state as State
         if (action[state] === output.event.trigger.action[state]) {

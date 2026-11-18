@@ -1,18 +1,7 @@
 import { Container } from './container'
 import { Port } from './types'
 
-/**
- * Un nivel (también es Container):
- *
- *   Widget
- *     └── mother  ← contenedor común de los hijos (puede ser App, u otro, o this)
- *           └── children
- *
- * Si no pasas mother, este Widget ES la mother.
- * El port del nivel vive siempre en la mother (donde están los hijos / dispatched).
- */
 export class Widget extends Container {
-  /** Contenedor común de los hijos de este nivel. */
   public readonly mother: Container
 
   constructor(

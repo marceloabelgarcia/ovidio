@@ -1,7 +1,7 @@
 import { ViewContainer } from './view-container'
-import { Container } from 'core/container'
+import { Container } from 'core/index'
 import { Port } from 'core/types'
-import { Widget } from 'core/widget'
+import { Widget } from 'core/index'
 
 /**
  * Primitiva de vista: Widget cuyo mother es ViewContainer.
