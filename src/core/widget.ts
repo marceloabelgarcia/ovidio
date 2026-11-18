@@ -2,11 +2,11 @@ import { Container } from './container'
 import { Port } from './types'
 
 export class Widget extends Container {
-  public readonly mother: Container
+  public readonly mother: Widget
 
   constructor(
-    children: Container[] = [],
-    mother?: Container,
+    children: Widget[] = [],
+    mother?: Widget,
     port: Port = {},
   ) {
     const own = mother == null

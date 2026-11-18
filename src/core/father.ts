@@ -23,6 +23,7 @@ export class Father {
   }
 
   dispatched(output: Output): void {
+    console.log('output', output)
 
     const { value, type } = output.resource
     this.resources[type] = value
