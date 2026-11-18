@@ -1,24 +1,42 @@
 import { Container } from './container'
+import { Father } from './father'
 import { Port } from './types'
 
-export class Widget extends Container {
-  public readonly mother: Container
+/**
+ * Unidad lógica: reúne Container (dónde vive) + Father (cómo fluye).
+ *
+ *   Widget
+ *     ├── container  → árbol físico
+ *     └── father     → port / resources / dispatched
+ */
+export class Widget {
+  public readonly container: Container
+  public readonly father: Father
 
   constructor(
+    container: Container,
     children: Container[] = [],
-    mother?: Container,
     port: Port = {},
   ) {
-    const own = mother == null
-    super(own ? children : [], port)
+    this.container = container
+    this.father = new Father(port, this.container)
 
-    this.mother = mother ?? this
+    this.container.setDispatch((output) => {
+      this.father.dispatched(output)
+    })
 
-    if (!own) {
-      this.mother.port = port
-      for (const child of children) {
-        this.mother.appendChild(child)
-      }
+    for (const child of children) {
+      this.append(child)
     }
+  }
+
+  public append(child: Container): void {
+    this.container.appendChild(child)
+  }
+
+  /** Anida otro Widget: container físico + Father padre/hijo. */
+  public appendWidget(child: Widget): void {
+    this.container.appendChild(child.container)
+    child.father.parent = this.father
   }
 }

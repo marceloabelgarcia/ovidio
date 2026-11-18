@@ -1,16 +1,16 @@
-import { Father } from './father'
-import { Port } from './types'
+import { Output } from './types'
 
-export class Container extends Father {
-  declare public parent: Container | null
-  declare public readonly children: Container[]
+/**
+ * Árbol físico: parent / children / appendChild.
+ * No sabe de port, resources ni Father.
+ */
+export class Container {
+  public parent: Container | null = null
+  public readonly children: Container[] = []
 
-  constructor(
-    children: Container[] = [],
-    port: Port = {},
-  ) {
-    super(port)
+  protected onDispatch?: (output: Output) => void
 
+  constructor(children: Container[] = []) {
     for (const child of children) {
       this.appendChild(child)
     }
@@ -19,5 +19,18 @@ export class Container extends Father {
   public appendChild(child: Container): void {
     child.parent = this
     this.children.push(child)
+  }
+
+  /** Emite hacia el callback del nivel, o burbujea al padre físico. */
+  public dispatch(output: Output): void {
+    if (this.onDispatch) {
+      this.onDispatch(output)
+      return
+    }
+    this.parent?.dispatch(output)
+  }
+
+  public setDispatch(callback: (output: Output) => void): void {
+    this.onDispatch = callback
   }
 }

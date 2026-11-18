@@ -1,3 +1,4 @@
+import { Container } from './container'
 import {
   Action,
   Output,
@@ -9,42 +10,49 @@ import {
 } from './types'
 
 /**
- * Reacción del nivel: resources, hermanos, avisar al padre.
- * Pensado para herencia: ContainerFather extends Father → usa this.
+ * Árbol lógico: port, resources, dispatched.
+ * Los hermanos salen del container del nivel (sin adopt / Peer).
  */
 export class Father {
   public parent: Father | null = null
-  public readonly children: Father[] = []
   public port: Port = {}
   readonly resources: Record<string, unknown> = {}
 
-  constructor(port: Port = {}) {
+  constructor(
+    port: Port = {},
+    /** Container del Widget: de ahí se leen los hijos para execute. */
+    private readonly container: Container,
+  ) {
     this.port = port
   }
 
   dispatched(output: Output): void {
-
+    console.log('output', output)
     const { value, type } = output.resource
     this.resources[type] = value
-    
-    const brothers = this.children.filter(
-      (child) => {
-        const state = output.event.trigger.state as State
-        return child.port.trigger?.action[state] === output.event.trigger.action[state]
-      }
-    )
 
-    brothers.forEach((brother) => {
-      brother.execute(output.resource)
-    })
-    
+    const state = output.event.trigger.state as State
+
+    for (const child of this.container.children) {
+      const port = (child as Container & { port?: Port }).port
+      const execute = (child as Container & {
+        execute?(resource?: Resource): void
+      }).execute
+
+      if (
+        port?.trigger?.action[state] ===
+          output.event.trigger.action[state] &&
+        execute
+      ) {
+        execute.call(child, output.resource)
+      }
+    }
+
     this.port.output?.forEach((relation: TriggerRelation) => {
       const { trigger, triggers } = relation
 
       triggers.forEach((action: Action) => {
-        const state: State = output.event.trigger.state as State
         if (action[state] === output.event.trigger.action[state]) {
-
           this.parent?.dispatched({
             event: {
               trigger,
@@ -60,6 +68,5 @@ export class Father {
     })
   }
 
-  /** Las hojas lo overridean; Father solo lo invoca en hermanos. */
   execute(_resource?: Resource): void {}
 }

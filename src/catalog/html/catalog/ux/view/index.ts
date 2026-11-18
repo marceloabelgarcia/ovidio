@@ -1,20 +1,16 @@
 import { ViewContainer } from './view-container'
-import { Container } from 'core/index'
+import { HtmlContainer } from 'catalog/html/core/html-container'
 import { Port } from 'core/types'
-import { Widget } from 'core/index'
+import { Widget } from 'core/widget'
 
 /**
- * Primitiva de vista: Widget cuyo mother es ViewContainer.
- *
- *   View (Widget)
- *     └── mother = ViewContainer
- *           └── children
+ * View = Widget(ViewContainer) + hijos hoja.
  */
 export class View extends Widget {
   constructor(
-    children: Container[] = [],
+    children: HtmlContainer[] = [],
     port: Port = {},
   ) {
-    super(children, new ViewContainer(), port)
+    super(new ViewContainer(), children, port)
   }
 }

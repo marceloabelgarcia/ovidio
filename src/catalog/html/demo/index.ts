@@ -3,9 +3,8 @@ import { DisplayContainer } from '../catalog/ui/display/'
 import { InputContainer } from '../catalog/ui/input/'
 import { AppContainer } from '../catalog/ux/app/app-container'
 import { View } from '../catalog/ux/view/'
-import { Widget } from 'core/index'
+import { Widget } from 'core/widget'
 import { TriggerRelation, Action, TypePart } from 'core/types'
-
 
 const actions: { [key: string]: Action } = {
     change: {
@@ -35,16 +34,16 @@ const actions: { [key: string]: Action } = {
 }
 
 const output: TriggerRelation[] = [
-        {
-            trigger: { action: actions.modify, state: 'finished' },
-            triggers: [actions.change],            
-        },
-        {
-            trigger: { action: actions.save, state: 'finished' },
-            triggers: [actions.submit],
-        },
-    ]
- 
+    {
+        trigger: { action: actions.modify, state: 'finished' },
+        triggers: [actions.change],
+    },
+    {
+        trigger: { action: actions.save, state: 'finished' },
+        triggers: [actions.submit],
+    },
+]
+
 const street: TypePart[] = [
     {
         name: 'name',
@@ -74,10 +73,11 @@ const address: TypePart[] = [
         type: 'string',
     },
 ]
+
 /**
  * Demo (Widget)
- *   └── mother = AppContainer
- *         └── ViewContainer (mother de View)
+ *   └── AppContainer
+ *         └── View.container (ViewContainer)
  *               ├── Button
  *               ├── Display
  *               └── Input
@@ -101,6 +101,7 @@ export class Demo extends Widget {
             },
         )
 
-        super([view.mother], new AppContainer(el))
+        super(new AppContainer(el))
+        this.appendWidget(view)
     }
 }

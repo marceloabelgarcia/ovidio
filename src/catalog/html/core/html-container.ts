@@ -1,24 +1,27 @@
-import { Container } from 'core/index'
-import { Output, Port } from 'core/types'
+import { Container } from 'core/container'
+import { Port, Resource } from 'core/types'
 
-
+/**
+ * Container + DOM. Sin Father: solo representación y eventos → dispatch.
+ */
 export class HtmlContainer extends Container {
   public readonly element: HTMLElement
+  /** Contrato de la hoja (input/trigger); el del nivel vive en Father. */
+  public port: Port = {}
 
   constructor(
     element: HTMLElement,
     children: Container[] = [],
     port: Port = {},
   ) {
-    // element debe existir antes de adoptar hijos (super no puede montar aún)
-    super([], port)
+    super([])
     this.element = element
+    this.port = port
     for (const child of children) {
       this.appendChild(child)
     }
   }
 
-  /** Adopta hijo en el árbol y en el DOM. */
   public override appendChild(child: Container): void {
     super.appendChild(child)
     if (child instanceof HtmlContainer) {
@@ -26,8 +29,6 @@ export class HtmlContainer extends Container {
     }
   }
 
-  public dispatch(output: Output): void {
-    this.parent?.dispatched(output)
-  }
-
+  /** Las hojas (Display, etc.) lo overridean. */
+  execute(_resource?: Resource): void {}
 }
