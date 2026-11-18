@@ -22,6 +22,7 @@ export class Container {
 
 
   dispatched(output: Output): void {
+    console.log(output.event.action.completed, this)
     // guardar recurso
     const { value, type } = output.resource
     this.resources[type] = value
@@ -46,12 +47,10 @@ export class Container {
             state: state,
             time: new Date(),
           }
+          console.log('avisar al padre', this);
           this.parent?.dispatched(event)
-
-          console.log(this)
         }
       })
-      console.log(name, type)
     })
     
   }

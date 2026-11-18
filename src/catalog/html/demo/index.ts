@@ -1,20 +1,14 @@
 import { ButtonContainer } from '../catalog/ui/button/'
 import { DisplayContainer } from '../catalog/ui/display/'
 import { InputContainer } from '../catalog/ui/input/'
-import { AppContainer } from 'catalog/html/core/app-container'
-import { Widget } from 'core/widget'
+import { App } from '../catalog/ux/app/'
 
 /**
- * Widget (nivel raíz)
- *   └── mother = AppContainer   ← primera mother, nace el runtime
- *         ├── Button
- *         ├── Display
- *         └── Input
+ * App (Widget) → mother = AppContainer → hijos de la demo.
  */
 export function Demo(el: HTMLElement): void {
-    const app = new AppContainer(el)
-
-    new Widget(
+    new App(
+        el,
         [
             new ButtonContainer(),
             new DisplayContainer({
@@ -25,7 +19,6 @@ export function Demo(el: HTMLElement): void {
                 input: 'name',
             }),
         ],
-        app,
         {
             input: 'street',
             output: [
