@@ -1,17 +1,15 @@
 import { ViewContainer } from './view-container'
-import { Container } from 'core/container'
+import { ChildSpec, Widget } from 'core/widget'
 import { Port } from 'core/types'
-import { Widget } from 'core/widget'
 
 /**
- * View de catálogo: Widget con hueco vacío (ViewContainer).
- * Los hijos se alojan después al usarla como mother.
+ * View de catálogo: mother = ViewContainer, hueco listo para specs.
  */
 export class View extends Widget {
   constructor(
-    children: Container[] = [],
+    children: ChildSpec[] = [],
     port: Port = {},
   ) {
-    super(children, new ViewContainer(), port)
+    super(new ViewContainer(), children, port)
   }
 }

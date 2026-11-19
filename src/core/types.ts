@@ -34,10 +34,11 @@ export type TriggerRelation = {
 }
 
 export type Port = {
-    input?: TypePart[] | string
+    /** string = hoja; TypePart = grupo (name + type[]); TypePart[] = partes sin nombre de grupo */
+    input?: string | TypePart | TypePart[]
     output?: TriggerRelation[]
     trigger?: Trigger
-    [key: string]: TriggerRelation[] | TypePart[] | Trigger | string | undefined
+    [key: string]: TriggerRelation[] | TypePart[] | TypePart | Trigger | string | undefined
 }
 
 export type Event = {

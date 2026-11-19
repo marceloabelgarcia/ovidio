@@ -8,9 +8,25 @@ import {
   TypePart,
 } from './types'
 
+/** Clave de resource desde port.input (nunca un array como clave). */
+export function resourceTypeFromPort(port: Port): string {
+  const input = port.input
+
+  if (typeof input === 'string') return input
+
+  if (input && typeof input === 'object' && !Array.isArray(input) && 'name' in input) {
+    return (input as TypePart).name
+  }
+
+  if (Array.isArray(input)) {
+    return input.map((part) => part.name).join('.')
+  }
+
+  return 'value'
+}
+
 /**
  * Reacción del nivel: resources, hermanos, avisar al padre.
- * Pensado para herencia: ContainerFather extends Father → usa this.
  */
 export class Father {
   public parent: Father | null = null
@@ -23,36 +39,41 @@ export class Father {
   }
 
   dispatched(output: Output): void {
-    console.log('output', output)
 
+    console.log('output=', output)
     const { value, type } = output.resource
-    this.resources[type] = value
-    
-    const brothers = this.children.filter(
-      (child) => {
-        const state = output.event.trigger.state as State
-        return child.port.trigger?.action[state] === output.event.trigger.action[state]
-      }
-    )
+    if (typeof type === 'string') {
+      this.resources[type] = value
+    }
 
-    brothers.forEach((brother) => {
-      brother.execute(output.resource)
+    const state = output.event.trigger.state as State
+
+    const brothers = this.children.filter((child) => {
+      return (
+        child.port.trigger?.action[state] ===
+        output.event.trigger.action[state]
+      )
     })
-    
+
+    console.log('brothers=', brothers)
+    brothers.forEach((brother) => {
+      const key = resourceTypeFromPort(brother.port)
+      const resourceValue = this.resources[key]
+      brother.execute({ type: key, value: resourceValue })
+    })
+
     this.port.output?.forEach((relation: TriggerRelation) => {
       const { trigger, triggers } = relation
 
       triggers.forEach((action: Action) => {
-        const state: State = output.event.trigger.state as State
         if (action[state] === output.event.trigger.action[state]) {
-
           this.parent?.dispatched({
             event: {
               trigger,
               time: new Date(),
             },
             resource: {
-              type: this.port.input as TypePart['name'],
+              type: resourceTypeFromPort(this.port),
               value: this.resources,
             },
           })
@@ -61,6 +82,5 @@ export class Father {
     })
   }
 
-  /** Las hojas lo overridean; Father solo lo invoca en hermanos. */
   execute(_resource?: Resource): void {}
 }

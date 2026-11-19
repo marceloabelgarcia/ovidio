@@ -1,33 +1,49 @@
 import { Container } from './container'
 import { Port } from './types'
 
+/** Hijos del nivel: siempre Widget. */
+export type ChildCtor = new (port?: Port) => Widget
+
+/** Spec de hijo: clase + port opcional. */
+export type ChildSpec = {
+  child: ChildCtor
+  port?: Port
+}
+
+function spawn(spec: ChildSpec): Widget {
+  return new spec.child(spec.port)
+}
+
 /**
- * Mother = hueco donde viven los hijos.
- *
- * - Sin mother → este Widget es su propia mother.
- * - Mother Container → se rellena ese hueco.
- * - Mother Widget (App/View) → se rellena su mother (shell del catálogo).
+ * Mother = Container | Widget (hueco).
+ * Hijos = siempre Widget ({ child, port? }).
+ * Si mother es Widget → hueco = mother.mother.
+ * Al alojar un hijo → se cuelga su mother (shell / primitiva).
  */
 export class Widget extends Container {
   public readonly mother: Container
 
   constructor(
-    children: Container[] = [],
     mother?: Container | Widget,
+    children: ChildSpec[] = [],
     port: Port = {},
   ) {
-    const own = mother == null
-    super(own ? children : [], port)
+    super([], port)
 
-    if (own) {
-      this.mother = this
-      return
+    this.mother =
+      mother == null
+        ? this
+        : mother instanceof Widget
+          ? mother.mother
+          : mother
+
+    if (mother != null) {
+      this.mother.port = port
     }
 
-    this.mother = mother instanceof Widget ? mother.mother : mother
-    this.mother.port = port
-    for (const child of children) {
-      this.mother.appendChild(child)
+    for (const spec of children) {
+      const child = spawn(spec)
+      this.mother.appendChild(child.mother)
     }
   }
 }

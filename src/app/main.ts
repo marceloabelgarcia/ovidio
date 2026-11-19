@@ -1,11 +1,13 @@
 import './style.css'
+import { Pages } from 'catalog/html/catalog/ux/page/'
 import { ButtonLabPage } from './pages/button-lab'
 
-const app = document.querySelector('#app')
-if (!app) throw new Error('#app no encontrado')
+const el = document.querySelector('#app') as HTMLElement | null
+if (!el) throw new Error('#app no encontrado')
 
-const path = location.pathname.replace(/\/$/, '') || '/'
+el.className = 'm-2 bg-gray-100 border border-black p-4 rounded-md'
 
-if (path === '/button' || path === '/') {
-  ButtonLabPage()
-}
+new Pages(el, [
+  { path: '/', page: ButtonLabPage },
+  { path: '/button', page: ButtonLabPage },
+])

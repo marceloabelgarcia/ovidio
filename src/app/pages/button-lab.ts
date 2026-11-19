@@ -1,10 +1,11 @@
-import { Demo } from 'catalog/html/demo/'
+import { Page } from 'catalog/html/catalog/ux/page/'
+import { StreetView } from 'catalog/html/demo/street-view'
+import { Port } from 'core/types'
+import { Widget } from 'core/widget'
 
-
-/** Runtime: Demo rellena el hueco de App. */
-export function ButtonLabPage(): void {
-  const el = document.querySelector('#app') as HTMLElement
-  el.className = 'm-2 bg-gray-100 border border-black p-4 rounded-md'
-
-  new Demo(el)
+/** Page de lab: mother = Page; hijo = StreetView. */
+export class ButtonLabPage extends Widget {
+  constructor(port: Port = {}) {
+    super(new Page(), [{ child: StreetView }], port)
+  }
 }

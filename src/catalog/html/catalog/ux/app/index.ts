@@ -1,18 +1,16 @@
 import { AppContainer } from './app-container'
-import { Container } from 'core/container'
+import { ChildSpec, Widget } from 'core/widget'
 import { Port } from 'core/types'
-import { Widget } from 'core/widget'
 
 /**
- * App de catálogo: Widget con hueco vacío (AppContainer).
- * Los hijos se alojan después al usarla como mother.
+ * App de catálogo: mother = AppContainer (#app), hueco listo para specs.
  */
 export class App extends Widget {
   constructor(
     el: HTMLElement,
-    children: Container[] = [],
+    children: ChildSpec[] = [],
     port: Port = {},
   ) {
-    super(children, new AppContainer(el), port)
+    super(new AppContainer(el), children, port)
   }
 }

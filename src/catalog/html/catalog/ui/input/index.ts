@@ -1,40 +1,21 @@
-import { HtmlContainer } from 'catalog/html/core/html-container'
-import { Action, Output, Port, Resource, TypePart, Verb } from 'core/types'
+import { Port } from 'core/types'
+import { Widget } from 'core/widget'
+import { childrenFromInputPort, levelPortFromInput } from './from-port'
+import { InputsContainer } from './inputs-container'
 
-const change: Verb = {
-  name: 'change',
-  noun: 'user',
-  gerund: 'changing',
-  participle: 'changed',
-}
+export { SingleInput } from './single-input'
+export { childrenFromInputPort, levelPortFromInput } from './from-port'
 
-/** Hoja Container: usable como hijo en cualquier lado. */
-export class InputContainer extends HtmlContainer {
-  constructor(
-    port: Port = {},
-    action: Action = {
-      verb: change.name,
-      actor: change.noun,
-      progress: change.gerund,
-      finished: change.participle,
-    },
-  ) {
-    const input = document.createElement('input')
-    input.className = 'input'
-
-    super(input, [], port)
-
-    input.addEventListener('change', ($event: Event) => {
-      const resource: Resource = {
-        type: port.input as TypePart["name"],
-        value: ($event.target as HTMLInputElement).value,
-      }
-
-      const output: Output = {
-        event: { trigger: { action, state : 'finished'}, time: new Date() },
-        resource,
-      }
-      this.dispatch(output)
-    })
+/**
+ * Input de catálogo:
+ * - port.input string | TypePart[] → SingleInput(s)
+ * - trigger → output del nivel
+ * - mother = InputsContainer (reparte execute a las hojas)
+ */
+export class Input extends Widget {
+  constructor(port: Port = {}) {
+    const level = levelPortFromInput(port)
+    super(new InputsContainer(), childrenFromInputPort(level), level)
   }
 }
+
