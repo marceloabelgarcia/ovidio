@@ -14,6 +14,7 @@ export class Container extends Father {
     for (const child of children) {
       this.appendChild(child)
     }
+ 
   }
 
   public appendChild(child: Container): void {

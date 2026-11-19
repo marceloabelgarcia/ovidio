@@ -30,7 +30,7 @@ export class StreetView extends Widget {
         {
           child: Display,
           port: {
-            input: address[0].name,
+            input: address[0],
             trigger: { action: actions.change, state: 'finished' },
           },
         },

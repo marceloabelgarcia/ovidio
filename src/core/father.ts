@@ -36,6 +36,8 @@ export class Father {
 
   constructor(port: Port = {}) {
     this.port = port
+
+    console.log(this.children)
   }
 
   dispatched(output: Output): void {
@@ -51,11 +53,11 @@ export class Father {
     const brothers = this.children.filter((child) => {
       return (
         child.port.trigger?.action[state] ===
-        output.event.trigger.action[state]
+        output.event.trigger.action[state] && child !== output.event.target
       )
     })
 
-    console.log('brothers=', brothers)
+
     brothers.forEach((brother) => {
       const key = resourceTypeFromPort(brother.port)
       const resourceValue = this.resources[key]
@@ -71,6 +73,7 @@ export class Father {
             event: {
               trigger,
               time: new Date(),
+              target: this,
             },
             resource: {
               type: resourceTypeFromPort(this.port),

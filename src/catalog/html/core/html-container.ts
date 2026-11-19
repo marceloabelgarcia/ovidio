@@ -27,6 +27,7 @@ export class HtmlContainer extends Container {
   }
 
   public dispatch(output: Output): void {
+    output.event.target = this
     this.parent?.dispatched(output)
   }
 
