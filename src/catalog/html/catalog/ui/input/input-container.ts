@@ -21,6 +21,7 @@ export class InputContainer extends HtmlContainer {
   ) {
     const input = document.createElement('input')
     input.className = 'input'
+    input.placeholder = port.input as string
 
     super(input, [], port)
 
@@ -31,7 +32,7 @@ export class InputContainer extends HtmlContainer {
       }
 
       const output: Output = {
-        event: { trigger: { action, state: 'finished' }, time: new Date() },
+        event: { trigger: { action, state: 'finished' }, time: new Date(), target: this },
         resource,
       }
       this.dispatch(output)

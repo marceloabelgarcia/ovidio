@@ -1,8 +1,8 @@
 import { Action, Port, State, Trigger, TriggerRelation, TypePart } from 'core/types'
-import { ChildSpec } from 'core/widget'
+import { ChildCtor, ChildSpec } from 'core/widget'
 import { SingleInput } from './single-input'
 
-function partsFromInput(input: Port['input']): TypePart[] | null {
+export function partsFromInput(input: Port['input']): TypePart[] | null {
   if (Array.isArray(input)) return input
 
   if (
@@ -35,16 +35,30 @@ export function levelPortFromInput(port: Port): Port {
   return { ...port, output }
 }
 
-/** Traduce port.input → hijos SingleInput (conserva el resto del port). */
-export function childrenFromInputPort(port: Port): ChildSpec[] {
+/**
+ * Traduce port.input → hijos.
+ * Si TypePart.type sigue siendo TypePart[], GroupInput anida otro Input (recursividad).
+ */
+export function childrenFromInputPort(
+  port: Port,
+  GroupInput?: ChildCtor,
+): ChildSpec[] {
   const input = port.input
   const parts = partsFromInput(input)
 
   if (parts) {
-    return parts.map((part: TypePart) => ({
-      child: SingleInput,
-      port: { ...port, input: part.name },
-    }))
+    return parts.flatMap((part: TypePart) => {
+      if (Array.isArray(part.type) && GroupInput) {
+        return [{ child: GroupInput, port: { ...port, input: part } }]
+      }
+
+      // Sin GroupInput: aplanar anidados a hojas
+      if (Array.isArray(part.type)) {
+        return childrenFromInputPort({ ...port, input: part }, GroupInput)
+      }
+
+      return [{ child: SingleInput, port: { ...port, input: part.name } }]
+    })
   }
 
   if (typeof input === 'string') {

@@ -9,13 +9,14 @@ export { childrenFromInputPort, levelPortFromInput } from './from-port'
 /**
  * Input de catálogo:
  * - port.input string | TypePart[] → SingleInput(s)
+ * - TypePart.type = TypePart[] → Input anidado (recursividad)
  * - trigger → output del nivel
  * - mother = InputsContainer (reparte execute a las hojas)
  */
 export class Input extends Widget {
   constructor(port: Port = {}) {
     const level = levelPortFromInput(port)
-    super(new InputsContainer(), childrenFromInputPort(level), level)
+    super(new InputsContainer(), childrenFromInputPort(level, Input), level)
   }
 }
 
