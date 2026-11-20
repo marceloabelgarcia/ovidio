@@ -1,7 +1,7 @@
 import { Port } from 'core/types'
 import { Widget } from 'core/widget'
 import { childrenFromInputPort, levelPortFromInput } from './from-port'
-import { InputsContainer } from './inputs-container'
+import { View } from 'catalog/html/catalog/ux/view/'
 
 export { SingleInput } from './single-input'
 export { childrenFromInputPort, levelPortFromInput } from './from-port'
@@ -11,12 +11,12 @@ export { childrenFromInputPort, levelPortFromInput } from './from-port'
  * - port.input string | TypePart[] → SingleInput(s)
  * - TypePart.type = TypePart[] → Input anidado (recursividad)
  * - trigger → output del nivel
- * - mother = InputsContainer (reparte execute a las hojas)
+ * - mother = FieldsetContainer (host entre legend y <p>)
  */
 export class Input extends Widget {
   constructor(port: Port = {}) {
     const level = levelPortFromInput(port)
-    super(new InputsContainer(), childrenFromInputPort(level, Input), level)
+    super(new View(), childrenFromInputPort(level, Input), level)
   }
 }
 

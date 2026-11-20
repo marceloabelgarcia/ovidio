@@ -39,6 +39,15 @@ function executeBrothers(father: Father, output: Output, state: State): void {
   })
 }
 
+/** Hoja (input string) → valor del slot; grupo → bolsa de resources. */
+function resourceValueFromFather(father: Father): unknown {
+  const input = father.port.input
+  if (typeof input === 'string') {
+    return father.resources[input]
+  }
+  return father.resources
+}
+
 function notifyParent(father: Father, output: Output, state: State): void {
   father.port.output?.forEach((relation: TriggerRelation) => {
     const { trigger, triggers } = relation
@@ -53,7 +62,7 @@ function notifyParent(father: Father, output: Output, state: State): void {
           },
           resource: {
             type: resourceTypeFromPort(father.port),
-            value: father.resources,
+            value: resourceValueFromFather(father),
           },
         })
       }

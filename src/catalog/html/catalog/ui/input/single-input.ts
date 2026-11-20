@@ -12,7 +12,7 @@ export class SingleInput2 extends Widget {
 
 export class SingleInput extends Widget {
   constructor(port: Port = {}) {
-    super(new FieldsetContainer(), [
+    super(new FieldsetContainer(port), [
       { child: SingleInput2, port }
     ], port)
   }

@@ -1,22 +1,28 @@
 import { HtmlContainer } from 'catalog/html/core/html-container'
-import { Resource, TypePart } from 'core/types'
+import { Port, Resource, TypePart } from 'core/types'
 
 /**
- * Mother del Input múltiple: reparte execute a cada hijo.
- * Si port.input es un grupo TypePart, pela ese nivel antes de repartir.
+ * Mother del Input de grupo: chrome fijo + host entre legend y <p>.
  */
 export class FieldsetContainer extends HtmlContainer {
-  constructor() {
+  constructor(port: Port = {}) {
     const el = document.createElement('fieldset')
     el.className = 'fieldset'
+
     const legend = document.createElement('legend')
-    legend.textContent = 'fieldset-legend'
+    legend.textContent = port.input as string
     el.appendChild(legend)
+
+    const host = document.createElement('div')
+    host.className = 'fieldset-host'
+    el.appendChild(host)
+
     const p = document.createElement('p')
     p.textContent = 'You can edit page title later on from settings'
     p.className = 'label'
     el.appendChild(p)
-    super(el)
+
+    super(el, [], {}, host)
   }
 
   override execute(resource?: Resource): void {

@@ -57,6 +57,6 @@ export class InputContainer extends HtmlContainer {
     // Sin valor para este campo: no pisar el input
     if (value == null) return
 
-    ;(this.element as HTMLInputElement).value = String(value)
+      ; (this.element as HTMLInputElement).value = String(value)
   }
 }
