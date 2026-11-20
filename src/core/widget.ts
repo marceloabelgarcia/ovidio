@@ -13,10 +13,10 @@ export class Widget extends Father {
     super()
     void port
 
-    // Mother raíz se autoasigna después del super; aquí solo si viene mother externa
+    // Mother ya instanciada + receta → Mother instancia y aloja
     if (mother) {
       this.mother = mother
-      this.mother.children = children
+      mother.appendChildren(children)
     }
   }
 }

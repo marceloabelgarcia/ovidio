@@ -10,42 +10,26 @@ export type Child = {
 export type Children = Child[]
 
 /**
- * Widget que además aloja: tiene host (Node) donde cuelga la realidad de los hijos.
- * Raíz: no necesita mother externa (mother = this).
+ * Widget que aloja: recibe host + receta, instancia hijos y los cuelga.
  */
 export class Mother extends Widget {
-  private _children: Children = []
-  private _host: Node | null = null
+  host: Node | null
+  children: Children
 
-  constructor(children: Children = []) {
+  constructor(host: Node | null = null, children: Children = []) {
     super(null, [])
     this.mother = this
-    if (children.length) {
-      this.children = children
-    }
+    this.host = host
+    this.children = children
+    this.appendChildren(children)
   }
 
-  get children(): Children {
-    return this._children
-  }
-
-  set children(children: Children) {
-    this._children = children
+  /** Instancia la receta y cuelga cada child.mother.host en this.host. */
+  appendChildren(children: Children): void {
     for (const child of children) {
       const widget = new child.child(child.port)
-      this._host?.append(widget.mother.host)
+      const childHost = widget.mother.host
+      if (this.host && childHost) this.host.append(childHost)
     }
-  }
-
-  get host(): Node {
-    return this._host as Node
-  }
-
-  set host(host: Node) {
-    this._host = host
-  }
-
-  public appendChild(child: Node): void {
-    this._host?.append(child)
   }
 }
