@@ -1,4 +1,5 @@
 
+
 export type TypePart = {
     name: string
     type: string | TypePart[]
@@ -35,7 +36,7 @@ export type TriggerRelation = {
 
 export type Port = {
     /** string = hoja; TypePart = grupo (name + type[]); TypePart[] = partes sin nombre de grupo */
-    input?: string | TypePart | TypePart[]
+    input?: string | TypePart | TypePart[] | Trigger
     output?: TriggerRelation[]
     trigger?: Trigger
     [key: string]: TriggerRelation[] | TypePart[] | TypePart | Trigger | string | undefined

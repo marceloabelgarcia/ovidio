@@ -1,49 +1,25 @@
-import { Container } from './container'
+import { Father } from './father'
 import { Port } from './types'
+import { Children, Host } from './host'
 
-/** Hijos del nivel: siempre Widget. */
-export type ChildCtor = new (port?: Port) => Widget
 
-/** Spec de hijo: clase + port opcional. */
-export type ChildSpec = {
-  child: ChildCtor
-  port?: Port
-}
-
-function spawn(spec: ChildSpec): Widget {
-  return new spec.child(spec.port)
-}
-
-/**
- * Mother = Container | Widget (hueco).
- * Hijos = siempre Widget ({ child, port? }).
- * Si mother es Widget → hueco = mother.mother.
- * Al alojar un hijo → se cuelga su mother (shell / primitiva).
- */
-export class Widget extends Container {
-  public readonly mother: Container
+export class Widget extends Father {
+  public host: Host
 
   constructor(
-    mother?: Container | Widget,
-    children: ChildSpec[] = [],
+    host: Host,
+    children: Children = [],
     port: Port = {},
   ) {
-    super([], port)
 
-    this.mother =
-      mother == null
-        ? this
-        : mother instanceof Widget
-          ? mother.mother
-          : mother
+    
+    super()
 
-    if (mother != null) {
-      this.mother.port = port
-    }
+    this.host = host
+    
+    this.host.Children = children
 
-    for (const spec of children) {
-      const child = spawn(spec)
-      this.mother.appendChild(child.mother)
-    }
   }
+
+
 }
