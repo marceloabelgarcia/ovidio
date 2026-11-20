@@ -1,20 +1,12 @@
 import { Widget } from 'core/widget'
-import { Port } from 'core/types'
-import { Host, Children, Child } from 'core/host'
+import { Port, Trigger } from 'core/types'
+
+import { Mother } from 'core/mother'
 import { Node } from 'core/node'
 
 /**
- * AppDemo: App + vistas.
- *
- *   App
- *     └── AppContainer
- *           └── StreetView.mother (ViewContainer)
- *                 ├── Input
- *                 ├── Display
- *                 └── Button
+ * Realidad HTML: envuelve un HTMLElement como Node del core.
  */
-
-
 export class HtmlNode extends Node {
   constructor(public readonly element: HTMLElement) {
     super()
@@ -27,21 +19,19 @@ export class HtmlNode extends Node {
   }
 }
 
-export class ButtonDemoHost extends Node {
-  
-
+/** Hoja: crea el <button> y lo expone como host (HtmlNode). */
+export class ButtonDemoHost extends Mother {
   constructor(port: Port = {}) {
+    super([])
+
     const button = document.createElement('button')
     button.textContent = 'Click me'
     button.className = 'btn btn-primary'
-
     button.addEventListener('click', () => {
       console.log('PORT:', port)
     })
 
-    super([])
-    // si Host.host = “realidad / punto de montaje” de este nivel:
-    this.Host = button
+    this.host = new HtmlNode(button)
   }
 }
 
@@ -51,28 +41,28 @@ export class ButtonDemo extends Widget {
   }
 }
 
-export class AppDemoHost extends Host {
-
+/** Raíz: el #app es el HtmlNode donde se cuelgan los hijos. */
+export class AppDemoHost extends Mother {
   constructor(el: HTMLElement) {
     super([])
-    this.Host = el
+    this.host = new HtmlNode(el)
   }
 }
 
-const trigger = {
+const trigger: Trigger = {
   action: {
     verb: 'click',
-    actor: 'button',
-    progress: 'clicking',
-    finished: 'clicked'
+    actor: 'user',
+    progress: 'submitting',
+    finished: 'submitted',
   },
-  state: 'runing'
+  state: 'finished',
 }
+
 export class AppDemo extends Widget {
   constructor(el: HTMLElement) {
-    
     const host = new AppDemoHost(el)
-    super(host, [{ child: ButtonDemo, port: { input: trigger } }])
+    super(host, [{ child: ButtonDemo, port: { trigger } }])
   }
 }
 

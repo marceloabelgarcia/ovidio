@@ -1,13 +1,13 @@
 import { Father } from './father'
 import { Port } from './types'
-import { Children, Host } from './host'
+import { Children, Mother } from './mother'
 
 
 export class Widget extends Father {
-  public host: Host
+  public mother: Mother
 
   constructor(
-    host: Host,
+    mother: Mother,
     children: Children = [],
     port: Port = {},
   ) {
@@ -15,9 +15,9 @@ export class Widget extends Father {
     
     super()
 
-    this.host = host
+    this.mother = mother
     
-    this.host.Children = children
+    this.mother.children = children
 
   }
 
