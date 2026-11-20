@@ -1,6 +1,5 @@
 import { Widget } from 'core/widget'
 import { Port, Trigger } from 'core/types'
-
 import { Mother } from 'core/mother'
 import { Node } from 'core/node'
 
@@ -19,10 +18,10 @@ export class HtmlNode extends Node {
   }
 }
 
-/** Hoja: crea el <button> y lo expone como host (HtmlNode). */
+/** Hoja: Mother con host = HtmlNode(button). */
 export class ButtonDemoHost extends Mother {
   constructor(port: Port = {}) {
-    super([])
+    super()
 
     const button = document.createElement('button')
     button.textContent = 'Click me'
@@ -41,10 +40,10 @@ export class ButtonDemo extends Widget {
   }
 }
 
-/** Raíz: el #app es el HtmlNode donde se cuelgan los hijos. */
+/** Raíz: Mother con host = HtmlNode(#app). */
 export class AppDemoHost extends Mother {
   constructor(el: HTMLElement) {
-    super([])
+    super()
     this.host = new HtmlNode(el)
   }
 }
@@ -61,8 +60,8 @@ const trigger: Trigger = {
 
 export class AppDemo extends Widget {
   constructor(el: HTMLElement) {
-    const host = new AppDemoHost(el)
-    super(host, [{ child: ButtonDemo, port: { trigger } }])
+    const mother = new AppDemoHost(el)
+    super(mother, [{ child: ButtonDemo, port: { trigger } }])
   }
 }
 
