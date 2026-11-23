@@ -1,6 +1,12 @@
-import { TriggerRelation, Action, TypePart } from 'core/types'
+import { TriggerRelation, Action, TypePart, Relations, Trigger } from 'core/types'
 
 export const actions: { [key: string]: Action } = {
+    click: {
+        verb: 'click',
+        actor: 'user',
+        progress: 'press',
+        finished: 'released',
+    },
     change: {
         verb: 'change',
         actor: 'system',
@@ -27,17 +33,39 @@ export const actions: { [key: string]: Action } = {
     },
 }
 
+export const trigger: Trigger = {
+    action: {
+        verb: 'change',
+        actor: 'user',
+        progress: 'changing',
+        finished: 'changed',
+    },
+    state: 'finished',
+}
+
+
+export const relations: Relations = {
+    triggers: [
+        {
+            trigger: { action: actions.parent, state: 'finished' },
+            triggers: [actions.child],
+        },
+    ],
+}
+
+
+
 export const output: TriggerRelation[] = [
-        {
-            trigger: { action: actions.modify, state: 'finished' },
-            triggers: [actions.change],            
-        },
-        {
-            trigger: { action: actions.save, state: 'finished' },
-            triggers: [actions.submit],
-        },
-    ]
- 
+    {
+        trigger: { action: actions.modify, state: 'finished' },
+        triggers: [actions.change],
+    },
+    {
+        trigger: { action: actions.save, state: 'finished' },
+        triggers: [actions.submit],
+    },
+]
+
 export const street: TypePart[] = [
     {
         name: 'name',

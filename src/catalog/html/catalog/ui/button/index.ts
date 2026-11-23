@@ -1,10 +1,22 @@
-import { ButtonContainer } from './button-container'
+import { ButtonContainer } from '../../ux/button'
 import { Port } from 'core/types'
+
 import { Widget } from 'core/widget'
 
-/** Button de catálogo: mother = ButtonContainer. */
 export class Button extends Widget {
   constructor(port: Port = {}) {
-    super(new ButtonContainer(port), [], port)
+
+    super(new ButtonContainer({
+      ...port,
+      input: {
+        action: {
+          verb: 'click',
+          actor: 'user',
+          progress: 'press',
+          finished: 'released',
+        },
+        state: 'finished',
+      },
+    }), [], port)
   }
 }

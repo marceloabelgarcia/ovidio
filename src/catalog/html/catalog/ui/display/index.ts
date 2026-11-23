@@ -1,10 +1,15 @@
-import { DisplayContainer } from './display-container'
+import { OutputContainer } from '../../ux/output'
 import { Port } from 'core/types'
+import { Children } from 'core/mother'
+
 import { Widget } from 'core/widget'
 
-/** Display de catálogo: mother = DisplayContainer. */
 export class Display extends Widget {
-  constructor(port: Port = { input: 'name' }) {
-    super(new DisplayContainer(port), [], port)
+  constructor(port: Port = {}) {
+
+    const children: Children = port.input as Children ?? []
+    super(new OutputContainer({
+      ...port,
+    }), [...children], port)
   }
 }

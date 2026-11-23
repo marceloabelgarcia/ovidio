@@ -1,4 +1,4 @@
-
+import { Children } from "./mother"
 
 export type TypePart = {
     name: string
@@ -34,12 +34,17 @@ export type TriggerRelation = {
     triggers: Action[]
 }
 
+export type Relations = {
+    triggers?: TriggerRelation[]
+}
+
+
 export type Port = {
     /** string = hoja; TypePart = grupo (name + type[]); TypePart[] = partes sin nombre de grupo */
-    input?: string | TypePart | TypePart[] | Trigger
-    output?: TriggerRelation[]
+    input?: string | TypePart | TypePart[] | Trigger | Children
+    relations?: Relations
     trigger?: Trigger
-    [key: string]: TriggerRelation[] | TypePart[] | TypePart | Trigger | string | undefined
+    [key: string]: Relations | TypePart[] | TypePart | Trigger | string | Children | undefined
 }
 
 export type Event = {

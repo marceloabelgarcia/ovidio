@@ -1,8 +1,11 @@
-import { Father } from './father'
-import { Port } from './types'
+import { Action, Output, Port } from './types'
 import { Children, Mother } from './mother'
+import { Resource } from './resource'
 
-export class Widget extends Father {
+/**
+ * Resource de catálogo: mother + receta. Sin host propio.
+ */
+export class Widget extends Resource {
   public mother!: Mother
 
   constructor(
@@ -13,10 +16,17 @@ export class Widget extends Father {
     super()
     void port
 
-    // Mother ya instanciada + receta → Mother instancia y aloja
     if (mother) {
       this.mother = mother
+      mother.parent = this
       mother.appendChildren(children)
     }
   }
+
+  dispatched(output: Output): void {
+    console.log('evento widget', output)
+    // this.parent?.dispatch(output)
+  }
+
+  execute(_action: Action): void {}
 }

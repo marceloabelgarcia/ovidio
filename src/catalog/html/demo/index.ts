@@ -1,51 +1,26 @@
 import { Port, Trigger } from 'core/types'
 import { Mother } from 'core/mother'
-import { Node } from 'core/node'
 import { Widget } from 'core/widget'
+import { HtmlNode } from '../core/html-container'
+import { Button } from '../catalog/ui/button'
+import { Display } from '../catalog/ui/display'
+import { trigger, actions } from './ports'
+import { Children } from 'core/mother'
 
-/**
- * Realidad HTML: envuelve un HTMLElement como Node del core.
- */
-export class HtmlNode extends Node {
-  constructor(public readonly element: HTMLElement) {
-    super()
-  }
-
-  append(child: Node): void {
-    if (child instanceof HtmlNode) {
-      this.element.appendChild(child.element)
-    }
-  }
-}
-
-const trigger: Trigger = {
-  action: {
-    verb: 'click',
-    actor: 'user',
-    progress: 'submitting',
-    finished: 'submitted',
-  },
-  state: 'finished',
-}
-
-/** Hoja: crea el DOM y lo pasa a Mother en el super. */
-export class ButtonDemo extends Mother {
-  constructor(port: Port = {}) {
-    const button = document.createElement('button')
-    button.textContent = 'Click me'
-    button.className = 'btn btn-primary'
-    button.addEventListener('click', () => {
-      console.log('PORT:', port)
-    })
-
-    super(new HtmlNode(button))
-  }
-}
 
 export class InputDemoHtml extends Mother {
   constructor(port: Port = {}) {
     const input = document.createElement('input')
     input.className = 'input'
+
+    input.addEventListener('change', () => {
+      this.set('value', input.value)
+      this.dispatched({
+        event: { trigger, time: new Date(), target: input },
+        resource: { type: 'input' },
+      })
+    })
+
     super(new HtmlNode(input))
   }
 }
@@ -58,7 +33,6 @@ export class InputDemo extends Widget {
 
 /**
  * Contenedor reutilizable: solo el hueco (sin el de página).
- * Lo monta quien lo cuelga (p. ej. App / #app vía appendChildren).
  */
 export class Container extends Mother {
   constructor(_port: Port = {}) {
@@ -68,11 +42,27 @@ export class Container extends Mother {
   }
 }
 
+
+
+
 /** Widget que usa Container como mother + su receta. */
 export class DemoContainer extends Widget {
   constructor(port: Port = {}) {
     super(new Container(), [
-      { child: ButtonDemo, port },
+      {
+        child: Button, port: {
+          ...port, relations:
+          {
+            triggers: [
+              {
+                trigger: { action: actions.submit, state: 'finished' },
+                triggers: [actions.click],
+              },
+            ],
+          }
+
+        }
+      },
       { child: InputDemo, port },
     ])
   }
