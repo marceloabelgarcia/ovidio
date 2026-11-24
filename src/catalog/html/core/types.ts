@@ -1,6 +1,12 @@
-import { TriggerRelation, Action, TypePart, Relations, Trigger } from 'core/types'
+import { TriggerRelation, Action, Trigger } from 'core/types'
 
 export const actions: { [key: string]: Action } = {
+    input: {
+        verb: 'input',
+        actor: 'user',
+        progress: 'inputting',
+        finished: 'inputted',
+    },
     click: {
         verb: 'click',
         actor: 'user',
@@ -9,7 +15,7 @@ export const actions: { [key: string]: Action } = {
     },
     change: {
         verb: 'change',
-        actor: 'system',
+        actor: 'user',
         progress: 'changing',
         finished: 'changed',
     },
@@ -44,15 +50,12 @@ export const trigger: Trigger = {
 }
 
 
-export const relations: Relations = {
-    triggers: [
+export const relations: TriggerRelation[] =  [
         {
             trigger: { action: actions.parent, state: 'finished' },
             triggers: [actions.child],
         },
-    ],
-}
-
+    ]
 
 
 export const output: TriggerRelation[] = [
@@ -63,35 +66,5 @@ export const output: TriggerRelation[] = [
     {
         trigger: { action: actions.save, state: 'finished' },
         triggers: [actions.submit],
-    },
-]
-
-export const street: TypePart[] = [
-    {
-        name: 'name',
-        type: 'string',
-    },
-    {
-        name: 'door',
-        type: 'number',
-    },
-]
-
-export const address: TypePart[] = [
-    {
-        name: 'street',
-        type: street,
-    },
-    {
-        name: 'city',
-        type: 'string',
-    },
-    {
-        name: 'state',
-        type: 'string',
-    },
-    {
-        name: 'zip',
-        type: 'string',
     },
 ]

@@ -1,7 +1,6 @@
-import { Page } from 'catalog/html/catalog/ux/page/'
+
 import { Demo } from 'catalog/html/demo/'
 import { Port } from 'core/types'
-import { Widget } from 'core/widget'
 
 /** Page de lab: mother = Page; hijo = StreetView. */
 export class ButtonLabPage  {

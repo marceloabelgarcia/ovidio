@@ -14,19 +14,19 @@ export class Widget extends Resource {
     port: Port = {},
   ) {
     super()
-    void port
+    this.port = port 
 
+    
     if (mother) {
       this.mother = mother
+      mother.port = port
       mother.parent = this
       mother.appendChildren(children)
     }
+
+
   }
 
-  dispatched(output: Output): void {
-    console.log('evento widget', output)
-    // this.parent?.dispatch(output)
-  }
 
-  execute(_action: Action): void {}
+
 }

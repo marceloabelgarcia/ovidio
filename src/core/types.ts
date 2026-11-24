@@ -1,3 +1,4 @@
+import { HtmlNode } from "~/catalog/html/core/html-container";
 import { Children } from "./mother"
 
 export type TypePart = {
@@ -34,17 +35,12 @@ export type TriggerRelation = {
     triggers: Action[]
 }
 
-export type Relations = {
-    triggers?: TriggerRelation[]
-}
-
 
 export type Port = {
-    /** string = hoja; TypePart = grupo (name + type[]); TypePart[] = partes sin nombre de grupo */
-    input?: string | TypePart | TypePart[] | Trigger | Children
-    relations?: Relations
+    input?: string | TypePart
+    relations?: TriggerRelation[]
     trigger?: Trigger
-    [key: string]: Relations | TypePart[] | TypePart | Trigger | string | Children | undefined
+    [key: string]: TriggerRelation[] | TypePart | Trigger | string | undefined
 }
 
 export type Event = {
@@ -62,7 +58,7 @@ export type Resource = {
 export type Output =
     {
         event: Event,
-        resource: Resource
+        resource?: Resource
     }
 
 

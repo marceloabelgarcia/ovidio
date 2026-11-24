@@ -1,7 +1,6 @@
 import { Mother } from 'core/mother'
 import { HtmlNode } from '../../../core/html-container'
-import { Event as CoreEvent, Resource, Port, Trigger } from 'core/types'
-
+import { Port, TriggerRelation, Action } from 'core/types'
 
 
 export class ButtonContainer extends Mother {
@@ -9,24 +8,26 @@ export class ButtonContainer extends Mother {
         const button = document.createElement('button')
         button.textContent = 'Click me'
         button.className = 'btn btn-primary'
-
-        button.addEventListener('click', ($event: Event) => {
-
-            const event: CoreEvent = {
-                trigger: port.input as Trigger,
-                time: new Date(),
-                target: $event.target,
-            }
-
-            const resource: Resource = {
-                type: 'button',
-                value: $event.target,
-            }
-
-            this.dispatched({ event, resource })
-        })
-
-
-        super(new HtmlNode(button))
+        
+        super(new HtmlNode(button), [], port)
     }
+
+    protected addListeners(action: Action, relation: TriggerRelation): void {
+        const el = (this.host as HtmlNode).element as HTMLInputElement
+        el.addEventListener(action.verb, ($event) => {
+ 
+            this.dispatched({
+                event: {
+                    trigger: relation.trigger,
+                    time: new Date(),
+                    target: el,
+                },
+                resource: {
+                    type: "button",
+                    value: $event.target,
+                }
+            })
+        })
+    }
+
 }
