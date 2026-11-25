@@ -37,10 +37,10 @@ export type TriggerRelation = {
 
 
 export type Port = {
-    input?: string | TypePart
+    input?: string | TypePart | HTMLElement
     relations?: TriggerRelation[]
     trigger?: Trigger
-    [key: string]: TriggerRelation[] | TypePart | Trigger | string | undefined
+    [key: string]: TriggerRelation[] | TypePart | Trigger | string | HTMLElement | undefined
 }
 
 export type Event = {

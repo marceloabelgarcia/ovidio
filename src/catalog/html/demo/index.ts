@@ -6,31 +6,31 @@ import { Button } from '../catalog/ui/button'
 import { Input } from '../catalog/ui/input'
 import { actions } from '../core/types'
 import { name, door } from './type'
+import { App } from '../catalog/ux/app' 
 
 
 
 
 
 
+export class FlexContainer extends Mother {
+  constructor(port: Port = {}) {
 
+    const content: HTMLElement = document.createElement('div')
+    content.className = 'flex flex-col p-2 gap-2'
 
-/**
- * Contenedor reutilizable: solo el hueco (sin el de página).
- */
-export class Container extends Mother {
-  constructor(_port: Port = {}) {
-    const div = document.createElement('div')
-    div.className = 'p-2 border border-black'
-    super(new HtmlNode(div))
+    super(new HtmlNode(content), [], port)
   }
 }
 
 
 
+
+
 /** Widget que usa Container como mother + su receta. */
-export class DemoContainer extends Widget {
+export class DemoWidget extends Widget {
   constructor(port: Port = {}) {
-    super(new Container(), [
+    super(new FlexContainer(), [
       {
         child: Button,
         port: {
@@ -64,18 +64,12 @@ export class DemoContainer extends Widget {
   }
 }
 
-/** Mother de página: el llega aquí (desde button-lab → AppDemo). */
-export class App extends Mother {
-  constructor(el: HTMLElement) {
-    super(new HtmlNode(el))
-  }
-}
 
 /** Widget raíz: mother = App(#app), hijo = DemoContainer. */
 export class AppDemo extends Widget {
   constructor(el: HTMLElement) {
     super(new App(el), [
-      { child: DemoContainer, port: {} },
+      { child: DemoWidget, port: {} },
     ])
   }
 }
