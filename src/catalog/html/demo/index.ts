@@ -4,9 +4,12 @@ import { HtmlNode } from '../core/html-container'
 import { Button } from '../catalog/ui/button'
 import { Input } from '../catalog/ui/input'
 import { Display } from '../catalog/ui/display'
+import { Modal } from '../catalog/ui/modal'
 import { actions } from '../core/types'
-import { name, door } from './type'
+import { name, door, city, zip } from './type'
 import { App } from '../catalog/ux/app'
+import { Get } from '../../http/catalog/ui/get'
+import { actions as http } from '../../http/core/types'
 
 /** Host columna: hijos uno debajo de otro. */
 export class Col extends HtmlNode {
@@ -118,10 +121,47 @@ export class DemoWidget extends Widget {
   }
 }
 
+/**
+ * Demo http: inputs que no son del usuario.
+ * - city: Get sin trigger → carga al montar (catálogo) → Display(city) lo muestra en 'fetched'.
+ * - zip: Get con trigger submitted → carga al click; la url no existe → 'failed'
+ *   sube hasta Page, donde el Modal (hermano de Main) lo espera.
+ */
+export class HttpDemo extends Widget {
+  constructor(port: Port = {}) {
+    super(new ContentHost(), [
+      { child: Get, port: { input: city, url: '/mock/cities.json' } },
+      {
+        child: Display,
+        port: { input: city, trigger: { action: http.fetch, state: 'finished' } },
+      },
+      {
+        child: Button,
+        port: {
+          relations: [
+            {
+              trigger: { action: actions.submit, state: 'finished' },
+              triggers: [actions.click],
+            },
+          ],
+        },
+      },
+      {
+        child: Get,
+        port: {
+          input: zip,
+          url: '/mock/zips.json',
+          trigger: { action: actions.submit, state: 'finished' },
+        },
+      },
+    ], port)
+  }
+}
+
 export class ContentWidget extends Widget {
   constructor(port: Port = {}) {
     super(new ContentHost(), [
-      { child: DemoWidget, port: {} },
+      { child: HttpDemo, port: {} },
       { child: DemoWidget, port: {} },
     ])
   }
@@ -146,6 +186,11 @@ export class Page extends Widget {
       { child: Header, port: {} },
       { child: Main, port: {} },
       { child: Footer, port: {} },
+      // la carcasa: se abre sola cuando un 'failed' llega a este nivel
+      {
+        child: Modal,
+        port: { title: 'Error', trigger: { action: http.fail, state: 'finished' } },
+      },
     ], port)
   }
 }

@@ -1,7 +1,7 @@
-import { Action, Output, Port, TriggerRelation } from './types'
+import { Action, Output, Port, Trigger, TriggerRelation } from './types'
 import type { Widget } from './widget'
 import { Node } from './node'
-import { triggerKey } from './resource'
+import { triggerKey, type Ref } from './resource'
 
 export type Child = {
   child: new (port?: Port) => Widget
@@ -58,4 +58,12 @@ export abstract class Mother extends Node {
 
   /** Hook realidad: qué hace esta vivienda cuando su widget recibe una orden. */
   execute(_output: Output): void {}
+
+  /** La realidad avisa a su widget: el evento nace en este nivel y sube desde ahí. */
+  protected emit(trigger: Trigger, resource?: Ref): void {
+    this.widget?.dispatched({
+      event: { trigger, time: new Date(), target: this },
+      resource,
+    })
+  }
 }

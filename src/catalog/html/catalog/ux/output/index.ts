@@ -29,7 +29,11 @@ export class OutputContainer extends HtmlNode {
   }
 
   show(el: HTMLElement, content?: unknown): void {
-    const text = content == null ? '' : String(content)
+    const text =
+      content == null ? ''
+      : Array.isArray(content) ? content.join(', ')
+      : typeof content === 'object' ? JSON.stringify(content)
+      : String(content)
     if (el instanceof Text) {
       el.data = text
     } else {
