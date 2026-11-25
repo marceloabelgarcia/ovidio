@@ -37,7 +37,6 @@ export class Widget extends Resource {
 
   /** El padre ordena: se baja a la realidad (Mother). */
   public execute(output: Output): void {
-    console.log('execute', this.constructor.name, output)
     this.mother?.execute(output)
   }
 }

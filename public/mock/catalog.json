@@ -1,0 +1,8 @@
+{
+  "address": {
+    "street": { "name": "Av. 18 de Julio", "door": 1234 },
+    "city": "Montevideo",
+    "state": "Montevideo",
+    "zip": "11100"
+  }
+}

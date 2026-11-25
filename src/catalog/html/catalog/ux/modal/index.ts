@@ -14,7 +14,7 @@ export class ModalContainer extends HtmlNode {
 
     const title = document.createElement('h3')
     title.className = 'text-lg font-bold'
-    title.textContent = typeof port.title === 'string' ? port.title : 'Aviso'
+    title.textContent = typeof port.input === 'string' ? port.input : 'Aviso' // el input del modal es su título
 
     const message = document.createElement('p')
     message.className = 'py-4'

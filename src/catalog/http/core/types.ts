@@ -1,11 +1,12 @@
 import { Action } from 'core/types'
 
 export const actions: { [key: string]: Action } = {
-  fetch: {
-    verb: 'fetch',
+  /** verb 'load' = la orden · 'loading' = en curso · 'loaded' = terminado */
+  load: {
+    verb: 'load',
     actor: 'system',
-    progress: 'fetching',
-    finished: 'fetched',
+    progress: 'loading',
+    finished: 'loaded',
   },
   fail: {
     verb: 'fail',

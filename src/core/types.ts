@@ -33,11 +33,11 @@ export type TriggerRelation = {
 }
 
 
+/** El port es siempre esto: qué entra, qué espera, qué traduce. */
 export type Port = {
     input?: string | TypePart | HTMLElement
     relations?: TriggerRelation[]
     trigger?: Trigger
-    [key: string]: TriggerRelation[] | TypePart | Trigger | string | HTMLElement | undefined
 }
 
 export type Event = {

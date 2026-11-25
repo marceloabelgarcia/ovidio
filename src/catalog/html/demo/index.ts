@@ -5,8 +5,9 @@ import { Button } from '../catalog/ui/button'
 import { Input } from '../catalog/ui/input'
 import { Display } from '../catalog/ui/display'
 import { Modal } from '../catalog/ui/modal'
+import { Fieldset } from '../catalog/ui/fieldset'
 import { actions } from '../core/types'
-import { name, door, city, zip } from './type'
+import { name, door, address, zip } from './type'
 import { App } from '../catalog/ux/app'
 import { Get } from '../../http/catalog/ui/get'
 import { actions as http } from '../../http/core/types'
@@ -121,38 +122,28 @@ export class DemoWidget extends Widget {
   }
 }
 
+/** La orden: verb 'load' (no es un submit: no se envía nada, se pide). */
+const load = { action: http.load, state: 'verb' } as const
+
 /**
  * Demo http: inputs que no son del usuario.
- * - city: Get sin trigger → carga al montar (catálogo) → Display(city) lo muestra en 'fetched'.
- * - zip: Get con trigger submitted → carga al click; la url no existe → 'failed'
- *   sube hasta Page, donde el Modal (hermano de Main) lo espera.
+ * El botón ordena 'load' y los Get la cumplen (loading → loaded | failed).
+ * - Get(address): su entrada del catálogo → 'loaded' → Fieldset(address) la desglosa.
+ * - Get(zip): no está en el catálogo → 'failed' sube hasta Page → Modal.
+ * Este layout no sabe de address: solo de load y fail.
  */
 export class HttpDemo extends Widget {
   constructor(port: Port = {}) {
     super(new ContentHost(), [
-      { child: Get, port: { input: city, url: '/mock/cities.json' } },
-      {
-        child: Display,
-        port: { input: city, trigger: { action: http.fetch, state: 'finished' } },
-      },
       {
         child: Button,
-        port: {
-          relations: [
-            {
-              trigger: { action: actions.submit, state: 'finished' },
-              triggers: [actions.click],
-            },
-          ],
-        },
+        port: { relations: [{ trigger: load, triggers: [actions.click] }] },
       },
+      { child: Get, port: { input: address, trigger: load } },
+      { child: Get, port: { input: zip, trigger: load } },
       {
-        child: Get,
-        port: {
-          input: zip,
-          url: '/mock/zips.json',
-          trigger: { action: actions.submit, state: 'finished' },
-        },
+        child: Fieldset,
+        port: { input: address, trigger: { action: http.load, state: 'finished' } },
       },
     ], port)
   }
@@ -189,7 +180,7 @@ export class Page extends Widget {
       // la carcasa: se abre sola cuando un 'failed' llega a este nivel
       {
         child: Modal,
-        port: { title: 'Error', trigger: { action: http.fail, state: 'finished' } },
+        port: { input: 'Error', trigger: { action: http.fail, state: 'finished' } },
       },
     ], port)
   }

@@ -102,7 +102,6 @@ export abstract class Resource {
    * `from` es el hijo directo que lo trajo (null si nació en este mismo nivel).
    */
   public dispatched(output: Output, from: Resource | null = null): void {
-    console.log('dispatched', output)
 
     // guardar el puntero a la caja que llega (último que emitió ese tipo)
     if (typeof output.resource?.type === 'string') this.link(output.resource)
