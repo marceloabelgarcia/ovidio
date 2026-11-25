@@ -25,12 +25,6 @@ export abstract class Resource {
     this.listeners.set(signal, list)
   }
 
-  /**
-   * Igual que el button:
-   *   el.addEventListener(action.verb, () => this.dispatched(...))
-   * aquí:
-   *   this.on(action.finished, (output) => this.parent?.dispatched(...))
-   */
   protected addListeners(action: Action, relation: TriggerRelation): void {
     for (const key of [action.verb, action.finished, action.progress, action.actor]) {
       if (!key) continue

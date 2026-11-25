@@ -1,6 +1,3 @@
-import { HtmlNode } from "~/catalog/html/core/html-container";
-import { Children } from "./mother"
-
 export type TypePart = {
     name: string
     type: string | TypePart[]
