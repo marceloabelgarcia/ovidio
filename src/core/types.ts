@@ -10,7 +10,7 @@ export type Verb = {
     participle: string
 };
 
-export type State = 'runing' | 'finished' | 'verb' | 'actor'
+export type State = 'progress' | 'finished' | 'verb' | 'actor'
 
 
 

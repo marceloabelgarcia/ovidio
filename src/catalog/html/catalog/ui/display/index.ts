@@ -2,18 +2,12 @@ import { OutputContainer } from '../../ux/output'
 import { Port } from 'core/types'
 import { Widget } from 'core/widget'
 
-
-export class DisplayContent extends Widget {
-  constructor(port: Port = {}) {
-    super(new OutputContainer(port), [], port)
-  }
-}
-
+/**
+ * Vista pura: no es primitiva, no crea caja.
+ * Con port.input = TypePart muestra el valor de ese tipo cuando le llega su trigger.
+ */
 export class Display extends Widget {
   constructor(port: Port = {}) {
-    
-    super(new OutputContainer(port), [
-      { child: DisplayContent, port },
-    ], port)
+    super(new OutputContainer(port), [], port)
   }
 }

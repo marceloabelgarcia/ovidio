@@ -17,13 +17,12 @@ export class DisplayContent extends Widget {
   }
 }
 
-const content: HTMLElement = document.createElement('div')
-content.className = 'border-2 border-red-500 font-bold text-2xl'
-content.textContent = 'HOLA'
-
-
 export class Button extends Widget {
   constructor(port: Port = {}) {
+    // uno por botón: un nodo del DOM vive en un solo lugar (appendChild lo mueve)
+    const content: HTMLElement = document.createElement('div')
+    content.className = 'border-2 border-red-500 font-bold text-2xl'
+    content.textContent = 'HOLA'
 
     super(
       new ButtonContainer(port),

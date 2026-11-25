@@ -1,9 +1,7 @@
-import { Mother } from 'core/mother'
 import { HtmlNode } from '../../../core/html-container'
 
-export class App extends Mother {
-    constructor(el: HTMLElement) {
-      super(new HtmlNode(el))
-    }
+export class App extends HtmlNode {
+  constructor(el: HTMLElement) {
+    super(el)
   }
-  
+}

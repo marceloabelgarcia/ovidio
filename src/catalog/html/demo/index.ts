@@ -1,38 +1,38 @@
 import { Port } from 'core/types'
-import { Mother } from 'core/mother'
 import { Widget } from 'core/widget'
 import { HtmlNode } from '../core/html-container'
 import { Button } from '../catalog/ui/button'
 import { Input } from '../catalog/ui/input'
+import { Display } from '../catalog/ui/display'
 import { actions } from '../core/types'
 import { name, door } from './type'
 import { App } from '../catalog/ux/app'
 
 /** Host columna: hijos uno debajo de otro. */
-export class Col extends Mother {
+export class Col extends HtmlNode {
   constructor(port: Port = {}) {
     const el = document.createElement('div')
     el.className = 'flex flex-col gap-2 p-2 min-h-screen border border-black'
-    super(new HtmlNode(el), [], port)
+    super(el, port)
   }
 }
 
 /** Host fila: hijos en horizontal. */
-export class Row extends Mother {
+export class Row extends HtmlNode {
   constructor(port: Port = {}) {
     const el = document.createElement('div')
     el.className = 'flex flex-row gap-2 p-2 flex-1 border border-blue-500'
-    super(new HtmlNode(el), [], port)
+    super(el, port)
   }
 }
 
 /** Panel genérico con host abierto + etiqueta. */
-class Panel extends Mother {
+class Panel extends HtmlNode {
   constructor(label: string, className: string, port: Port = {}) {
     const el = document.createElement('div')
     el.className = className
     el.textContent = label
-    super(new HtmlNode(el), [], port)
+    super(el, port)
   }
 }
 
@@ -61,11 +61,11 @@ export class RightPanel extends Widget {
 }
 
 /** Host del contenido central (abierto). */
-class ContentHost extends Mother {
+class ContentHost extends HtmlNode {
   constructor(port: Port = {}) {
     const el = document.createElement('div')
     el.className = 'flex flex-col gap-2 p-2 flex-1 border border-red-500'
-    super(new HtmlNode(el), [], port)
+    super(el, port)
   }
 }
 
@@ -85,10 +85,23 @@ export class DemoWidget extends Widget {
           ],
         },
       },
-      { child: Input, port: { input: name } },
+      {
+        child: Input,
+        port: {
+          input: name,
+          trigger: { action: actions.change, state: 'finished' },
+        }
+      },
       { child: Input, port: { input: door } },
       {
         child: Input,
+        port: {
+          input: name,
+          trigger: { action: actions.change, state: 'finished' },
+        },
+      },
+      {
+        child: Display,
         port: {
           input: name,
           trigger: { action: actions.change, state: 'finished' },
@@ -105,12 +118,22 @@ export class DemoWidget extends Widget {
   }
 }
 
+export class ContentWidget extends Widget {
+  constructor(port: Port = {}) {
+    super(new ContentHost(), [
+      { child: DemoWidget, port: {} },
+      { child: DemoWidget, port: {} },
+    ])
+  }
+}
+
+
 /** main: left | DemoWidget | right */
 export class Main extends Widget {
   constructor(port: Port = {}) {
     super(new Row(), [
       { child: LeftPanel, port: {} },
-      { child: DemoWidget, port: {} },
+      { child: ContentWidget, port: {} },
       { child: RightPanel, port: {} },
     ], port)
   }
