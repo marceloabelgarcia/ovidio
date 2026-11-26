@@ -8,7 +8,8 @@ export type HtmlContent = HTMLElement | Text
 /**
  * Mother HTML: ella misma es el host (element + append).
  * Es también la frontera entre mundos: sus sensores capturan lo que pasa en el HTML
- * (teclado, mouse, pantalla…) y lo cuentan como gramática con `emit`.
+ * (teclado, mouse, pantalla…) y lo cuentan como gramática con `emit` (entra a la cadena
+ * como hecho); sus `execute` lo proyectan de vuelta al HTML (sale como acción).
  */
 export class HtmlContainer extends Mother {
   constructor(
@@ -28,7 +29,7 @@ export class HtmlContainer extends Mother {
 
   /**
    * Cuando la realidad ya existe: de las relations solo toma qué acciones sensar.
-   * El lugar cuenta lo que pasó, conjugado ('released', 'changed'); contarlo con su frase es del jefe (su encargo en Mother.entrust).
+   * El lugar cuenta lo que pasó, conjugado ('released', 'changed'); contarlo con su frase es del jefe (su encargo, en la matriz del lugar).
    */
   protected bindRelations(): void {
     // un sensor por acción: repetido = aviso doble

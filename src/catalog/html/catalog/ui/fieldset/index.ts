@@ -25,7 +25,12 @@ export class Fieldset extends Widget {
     )
   }
 
-  /** Recibe el valor de su TypePart y le baja a cada hijo solo su parte (referencia, no copia). */
+  /**
+   * Recibe el valor de su TypePart y le arma a cada hijo una caja nueva con su parte
+   * (la parte apunta al valor de la caja de arriba; la caja es nueva).
+   * Rodea la matriz: llama a child.execute a mano. El desglose por input todavía
+   * no tiene lugar en el core (la matriz ordena trigger/relations, no input).
+   */
   public execute(output: Output): void {
     const part = this.port.input as TypePart | undefined
     const value = output.resource?.value

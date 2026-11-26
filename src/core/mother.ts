@@ -1,6 +1,7 @@
 import { Output, Port, Resource, Trigger } from './types'
 import type { Widget } from './widget'
-import { Matrix, signal, triggerKey } from './resource'
+import { signal, triggerKey } from './resource'
+import { Matrix } from './matrix'
 
 export type Child = {
   child: new (port?: Port) => Widget
@@ -14,16 +15,16 @@ export type Children = Child[]
  * Lo horizontal es suyo: darlos a luz (la receta), alojarlos (host) y conectar a los hermanos.
  * Todo aviso de sus obreros llega acá: lo de los hijos queda acá, y al jefe
  * solo se lo molesta por lo que dejó encargado (sus relations).
+ * Es la frontera con la realidad: lo de afuera entra a la cadena como hecho (emit)
+ * y sale como acción (execute). Si trae un valor, lo escribe en la caja antes de avisar.
  * Entra vivo al widget: su realidad (HTML, red…) ya existe.
  */
 export abstract class Mother {
   port: Port = {}
   /** El widget (jefe) que vive en este lugar. Lo asigna Widget al montar. */
   widget: Widget | null = null
-  /** Matriz de hermanos: clave de trigger → hijos que la esperan (su port.trigger). */
-  private readonly siblings = new Matrix<Widget>()
-  /** El encargo del jefe: clave que llega → frase con la que él la cuenta a su padre. */
-  private readonly entrusted = new Matrix<Trigger>(triggerKey)
+  /** El cableado del nivel: in (hermanos que esperan) y out (el encargo del jefe). Vacío hasta montar. */
+  private matrix = new Matrix<Widget>()
 
   constructor(port: Port = {}) {
     this.port = port
@@ -32,20 +33,27 @@ export abstract class Mother {
   /** Alojar: colgar la realidad de un hijo dentro de la de este lugar. */
   abstract append(child: Mother): void
 
-  /** Da a luz a la receta: instancia cada hijo, lo aloja y lo conecta con sus hermanos. */
+  /** Da a luz a la receta: instancia cada hijo y lo aloja. */
   appendChildren(children: Children): Widget[] {
     return children.map(({ child: Child, port }) => {
       const child = new Child(port)
       this.append(child.mother)
-      const key = triggerKey(child.port?.trigger)
-      if (key) this.siblings.add(key, child)
       return child
     })
   }
 
-  /** El jefe deja encargado cuándo molestarlo (`key`) y qué frase va a contar (`sentence`). */
-  entrust(key: string, sentence: Trigger): void {
-    this.entrusted.add(key, sentence)
+  /**
+   * El cableado llega una vez, al montar. El lugar conecta a sus hermanos (in: lo que
+   * cada obrero espera en su port.trigger); el jefe le deja su encargo (out: cuándo
+   * molestarlo y con qué frase). La matriz no compone nada: lo recibe armado.
+   */
+  wire(children: Widget[], entrusted: Iterable<[string, Trigger]>): void {
+    const waiting: [string, Widget][] = []
+    for (const child of children) {
+      const key = triggerKey(child.port?.trigger)
+      if (key) waiting.push([key, child])
+    }
+    this.matrix = new Matrix(waiting, entrusted)
   }
 
   /**
@@ -55,30 +63,33 @@ export abstract class Mother {
     // memoria: el jefe guarda el puntero a la caja que pasa (en silencio: no se lo molesta)
     if (typeof output.resource?.type === 'string') this.widget?.link(output.resource)
 
-    // horizontal: los hermanos que lo esperan, menos el que lo trajo
-    this.distribute(output, from)
+    // in: los hermanos que lo esperan, menos el que lo trajo
+    this.matrix.distribute(output, from)
 
-    // vertical: si el jefe lo encargó, cuenta su frase; si no, sube igual a la madre de arriba
-    const sentences = this.entrusted.get(triggerKey(output.event.trigger))
+    // out: si el jefe lo encargó, cuenta su frase (entra al in de la matriz de arriba)
+    const sentences = this.matrix.exits(output)
     if (sentences.length) {
       for (const sentence of sentences) this.widget?.tell(sentence, output)
       return
     }
+    // sin out: sube igual a la madre de arriba (opción a; la b lo dejaría acá)
     this.above()?.receive(output, this.widget)
   }
 
-  /** Los hermanos que esperan esta señal la ejecutan, menos el que la trajo. */
+  /** Una orden que baja: la reciben los obreros que la esperan (el in de la matriz). */
   distribute(output: Output, from: Widget | null): void {
-    for (const child of this.siblings.get(triggerKey(output.event.trigger))) {
-      if (child !== from) child.execute(output)
-    }
+    this.matrix.distribute(output, from)
   }
 
-  /** Hook realidad: qué hace este lugar cuando su widget recibe una orden. */
+  /**
+   * Salida: la señal sale de la cadena como acción sobre la realidad
+   * (mostrar, abrir, pedir…). Lee el valor de la caja que trae la señal.
+   */
   execute(_output: Output): void {}
 
   /**
-   * La voz del lugar: la realidad cuenta lo que pasó; la señal nace en este lugar.
+   * Entrada: lo de afuera entra a la cadena como hecho; la señal nace en este lugar.
+   * Si trae un valor, el lugar ya lo escribió en la caja y la señal lleva su referencia.
    * Quién la usa (sensores del HTML, la red…) es del catálogo, no del core.
    */
   protected emit(trigger: Trigger, resource?: Resource): void {

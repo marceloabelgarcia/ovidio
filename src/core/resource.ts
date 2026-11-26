@@ -2,6 +2,7 @@ import { Output, Port, Resource, Trigger, TriggerRelation } from './types'
 
 // Piezas del core. 'Resource' es solo la caja ({ type, value }): la crea la primitiva
 // y todos los niveles apuntan a la misma.
+// Son dos ejes: la cadena de matrices lleva los sucesos; las cajas guardan el valor.
 
 /** Clave lógica de un trigger: la acción en ese estado (change + finished → 'changed'). */
 export const triggerKey = (trigger?: Trigger): string | undefined => {
@@ -9,7 +10,10 @@ export const triggerKey = (trigger?: Trigger): string | undefined => {
   return typeof key === 'string' ? key : undefined
 }
 
-/** La única forma de armar la señal que viaja (arriba con receive, abajo con execute). */
+/**
+ * La única forma de armar la señal: el suceso (qué, cuándo, quién) más la referencia
+ * a la caja, nunca una copia del valor. Viaja arriba con receive y abajo con execute.
+ */
 export const signal = (trigger: Trigger, target: unknown, resource?: Resource): Output => ({
   event: { trigger, time: new Date(), target },
   resource,
@@ -27,30 +31,9 @@ export const eachRelation = (
 }
 
 /**
- * Matriz (switch): clave → lista. Una entrada no se repite bajo la misma clave.
- * `id` dice cuándo dos entradas son la misma (por defecto, la misma instancia).
+ * Memoria de referencias por tipo (no valores): la fuente vive en la primitiva.
+ * Los lugares escriben acá directamente (set) y después avisan: el valor no pasa por la matriz.
  */
-export class Matrix<T> {
-  private readonly table = new Map<string, T[]>()
-
-  constructor(private readonly id: (item: T) => unknown = (item) => item) {}
-
-  /** Agrega; devuelve false si ya estaba (no se duplica). */
-  add(key: string, item: T): boolean {
-    const list = this.table.get(key) ?? []
-    const id = this.id(item)
-    if (list.some((x) => this.id(x) === id)) return false
-    list.push(item)
-    this.table.set(key, list)
-    return true
-  }
-
-  get(key: string | undefined): readonly T[] {
-    return (key && this.table.get(key)) || []
-  }
-}
-
-/** Memoria de referencias por tipo (no valores): la fuente vive en la primitiva. */
 export class Boxes {
   private readonly refs: Record<string, Resource> = {}
 

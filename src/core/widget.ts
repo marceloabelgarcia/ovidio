@@ -30,18 +30,21 @@ export class Widget {
       this.mother = mother
       mother.widget = this
 
-      // el encargo: le deja a su lugar cuándo molestarlo y qué frase va a contar
-      eachRelation(port, (source, relation) => {
-        const key = triggerKey(source)
-        if (key) mother.entrust(key, relation.trigger)
-      })
-
       // el lugar da a luz y aloja; el jefe los toma como suyos
       this.children = mother.appendChildren(children)
       for (const child of this.children) {
         child.parent = this
         this.adopt(child)
       }
+
+      // el encargo: cuándo molestarlo (lo que llega) y con qué frase lo cuenta (sus relations)
+      const entrusted: [string, Trigger][] = []
+      eachRelation(port, (source, relation) => {
+        const key = triggerKey(source)
+        if (key) entrusted.push([key, relation.trigger])
+      })
+      // el cableado del nivel llega armado al lugar: sus obreros + su encargo
+      mother.wire(this.children, entrusted)
     }
   }
 

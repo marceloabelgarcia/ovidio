@@ -7,6 +7,7 @@ import { Port } from 'core/types'
  * Realidad de la URL: lee el path y monta solo el hijo que le corresponde.
  * Cada hijo de la receta dice su ruta en port.input ('/', '/http', …).
  * Sin coincidencia no se monta nada. Navegar = cargar otra URL (no hay desmontar).
+ * No es una señal: en la construcción, la realidad (la URL) decide la forma de la cadena.
  */
 export class RouterContainer extends HtmlContainer {
   private readonly path = location.pathname.replace(/\/$/, '') || '/'
