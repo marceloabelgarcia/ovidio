@@ -1,6 +1,5 @@
 import { HtmlNode } from '../../../core/html-container'
-import { Port, TriggerRelation, Action } from 'core/types'
-import { signal } from 'core/resource'
+import { Port, Action } from 'core/types'
 
 export class ButtonContainer extends HtmlNode {
   constructor(port: Port = {}) {
@@ -11,10 +10,11 @@ export class ButtonContainer extends HtmlNode {
     super(button, port)
   }
 
-  protected listen(action: Action, relation: TriggerRelation): void {
+  /** Escucha la acción del DOM y la avisa en crudo ('click'); el jefe la traduce. */
+  protected listen(action: Action): void {
     const el = this.element as HTMLButtonElement
     el.addEventListener(action.verb, ($event) => {
-      this.widget?.dispatched(signal(relation.trigger, el, { type: 'button', value: $event.target }))
+      this.emit({ action, state: 'verb' }, { type: 'button', value: $event.target })
     })
   }
 }

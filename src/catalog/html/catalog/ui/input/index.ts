@@ -1,7 +1,6 @@
 import { Port, TypePart, TriggerRelation, Action, Output } from 'core/types'
 import { HtmlNode } from '../../../core/html-container'
 import { Widget } from 'core/widget'
-import { signal } from 'core/resource'
 import { actions } from '../../../core/types'
 
 export const trigger = { action: actions.submit, state: 'finished' }
@@ -19,14 +18,15 @@ class InputContainer extends HtmlNode {
     this.name = name
   }
 
-  protected listen(action: Action, relation: TriggerRelation): void {
+  /** Escucha la acción del DOM y la avisa en crudo ('change'); el jefe la traduce. */
+  protected listen(action: Action): void {
     const el = this.element as HTMLInputElement
     el.addEventListener(action.verb, () => {
       const widget = this.widget
       if (!widget) return
       widget.set(this.name, el.value) // muta la caja: la fuente única
       // siempre la misma caja, nunca un objeto nuevo
-      widget.dispatched(signal(relation.trigger, el, widget.ref(this.name)))
+      this.emit({ action, state: 'verb' }, widget.ref(this.name))
     })
   }
 
@@ -46,20 +46,21 @@ class InputContainer extends HtmlNode {
 export class Input extends Widget {
   constructor(port: Port = {}) {
     const { name } = (port.input as TypePart) ?? {}
-    const mother = new InputContainer({
-      ...port,
-      relations: [
-        {
-          trigger: { action: actions.change, state: 'finished' },
-          triggers: [
-            actions.change,
-            // actions.input
-          ],
-        },
-      ],
-    })
+    // un solo port para el jefe y su lugar: el lugar escucha 'change', el jefe lo avisa como 'changed'
+    const relations: TriggerRelation[] = [
+      {
+        trigger: { action: actions.change, state: 'finished' },
+        triggers: [
+          actions.change,
+          // actions.input
+        ],
+      },
+      ...(port.relations ?? []),
+    ]
+    const own = { ...port, relations }
+    const mother = new InputContainer(own)
 
-    super(mother, [], port)
+    super(mother, [], own)
 
     if (name) {
       this.set(name, (mother.element as HTMLInputElement).value)

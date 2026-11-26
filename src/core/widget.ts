@@ -91,8 +91,13 @@ export class Widget {
     this.parent?.dispatched(output, this)
   }
 
-  /** El jefe ordena: se baja al lugar (Mother). */
+  /**
+   * Le llega una orden: la cumple su lugar (Mother) y la reparte entre sus obreros
+   * que esperan esa misma clave. Así baja nivel a nivel, por un camino explícito:
+   * solo pasa por quien declara ese trigger en su port.
+   */
   public execute(output: Output): void {
     this.mother?.execute(output)
+    this.mother?.distribute(output, null)
   }
 }

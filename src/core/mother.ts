@@ -1,4 +1,4 @@
-import { Action, Output, Port, Resource, Trigger, TriggerRelation } from './types'
+import { Action, Output, Port, Resource, Trigger } from './types'
 import type { Widget } from './widget'
 import { eachRelation, Matrix, signal, triggerKey } from './resource'
 
@@ -28,12 +28,17 @@ export abstract class Mother {
   /** Alojar: colgar la realidad de un hijo dentro de la de este lugar. */
   abstract append(child: Mother): void
 
-  /** Cuando la realidad ya existe: relations → hook listen (un listener por par acción → trigger). */
+  /**
+   * Cuando la realidad ya existe: de las relations solo toma qué acciones escuchar.
+   * El lugar avisa en crudo lo que pasó ('click'); traducirlo es del jefe (Widget.relay).
+   */
   protected bindRelations(): void {
-    // repetido = dispatch doble: la matriz descarta el par que ya está
-    const bound = new Matrix<Trigger>(triggerKey)
-    eachRelation(this.port, (action, relation) => {
-      if (bound.add(action.verb, relation.trigger)) this.listen(action, relation)
+    // un listener por acción: repetido = aviso doble
+    const heard = new Set<string>()
+    eachRelation(this.port, (action) => {
+      if (heard.has(action.verb)) return
+      heard.add(action.verb)
+      this.listen(action)
     })
   }
 
@@ -55,8 +60,8 @@ export abstract class Mother {
     }
   }
 
-  /** Hook realidad: escuchar lo que pasa en el HTML, la red… (ButtonContainer, InputContainer). */
-  protected listen(_action: Action, _relation: TriggerRelation): void {}
+  /** Hook realidad: escuchar esa acción en el HTML, la red… y avisarla en crudo con `emit`. */
+  protected listen(_action: Action): void {}
 
   /** Hook realidad: qué hace este lugar cuando su widget recibe una orden. */
   execute(_output: Output): void {}
