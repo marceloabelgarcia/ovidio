@@ -1,5 +1,4 @@
 import { Mother } from 'core/mother'
-import { Node } from 'core/node'
 import { Port } from 'core/types'
 
 /** Realidad HTML: Element o Text. */
@@ -17,7 +16,7 @@ export class HtmlNode extends Mother {
     this.bindRelations()
   }
 
-  append(child: Node): void {
+  append(child: Mother): void {
     if (!(child instanceof HtmlNode)) return
     if (this.element instanceof HTMLElement) {
       this.element.appendChild(child.element)

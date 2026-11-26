@@ -1,7 +1,6 @@
-import { Action, Output, Port, Trigger, TriggerRelation } from './types'
+import { Action, Output, Port, Resource, Trigger, TriggerRelation } from './types'
 import type { Widget } from './widget'
-import { Node } from './node'
-import { triggerKey, type Ref } from './resource'
+import { eachRelation, Matrix, signal, triggerKey } from './resource'
 
 export type Child = {
   child: new (port?: Port) => Widget
@@ -11,59 +10,59 @@ export type Child = {
 export type Children = Child[]
 
 /**
- * Vivienda del árbol de realidad (Node). No es Resource ni Widget.
- * El producto que la usa queda en `widget`.
+ * El lugar: donde viven y trabajan los obreros de un nivel.
+ * Lo horizontal es suyo: darlos a luz (la receta), alojarlos (host) y conectar a los hermanos.
+ * Entra vivo al widget: su realidad (HTML, red…) ya existe.
  */
-export abstract class Mother extends Node {
+export abstract class Mother {
   port: Port = {}
-  /** Widget dueño (producto). Lo asigna Widget al montar. */
+  /** El widget (jefe) que vive en este lugar. Lo asigna Widget al montar. */
   widget: Widget | null = null
-  children: Children = []
+  /** Matriz de hermanos: clave de trigger → hijos que la esperan (su port.trigger). */
+  private readonly siblings = new Matrix<Widget>()
 
   constructor(port: Port = {}) {
-    super()
     this.port = port
   }
-  
 
-  /** Cuando la realidad ya existe: relations DOM → addListeners. */
+  /** Alojar: colgar la realidad de un hijo dentro de la de este lugar. */
+  abstract append(child: Mother): void
+
+  /** Cuando la realidad ya existe: relations → hook listen (un listener por par acción → trigger). */
   protected bindRelations(): void {
-    // un listener DOM por par (evento DOM → trigger emitido); repetido = dispatch doble
-    const bound = new Set<string>()
-    Array.isArray(this.port.relations) &&
-      this.port.relations.forEach((relation) => {
-        relation?.triggers?.forEach((action) => {
-          const pair = `${action.verb}→${triggerKey(relation.trigger)}`
-          if (bound.has(pair)) return
-          bound.add(pair)
-          this.addListeners(action, relation)
-        })
-      })
+    // repetido = dispatch doble: la matriz descarta el par que ya está
+    const bound = new Matrix<Trigger>(triggerKey)
+    eachRelation(this.port, (action, relation) => {
+      if (bound.add(action.verb, relation.trigger)) this.listen(action, relation)
+    })
   }
 
-  /** Instancia la receta, cuelga cada child.mother en this (somos el host) y devuelve los hijos. */
+  /** Da a luz a la receta: instancia cada hijo, lo aloja y lo conecta con sus hermanos. */
   appendChildren(children: Children): Widget[] {
-    this.children = children
     return children.map(({ child: Child, port }) => {
       const child = new Child(port)
       this.append(child.mother)
-      child.mother.parent = this
-      child.parent = this.widget
+      const key = triggerKey(child.port?.trigger)
+      if (key) this.siblings.add(key, child)
       return child
     })
   }
 
-  /** Hook DOM (ButtonContainer, InputContainer, …). */
-  protected addListeners(_action: Action, _relation: TriggerRelation): void {}
+  /** Horizontal: los hermanos que esperan esta señal la ejecutan, menos el que la trajo. */
+  distribute(output: Output, from: Widget | null): void {
+    for (const child of this.siblings.get(triggerKey(output.event.trigger))) {
+      if (child !== from) child.execute(output)
+    }
+  }
 
-  /** Hook realidad: qué hace esta vivienda cuando su widget recibe una orden. */
+  /** Hook realidad: escuchar lo que pasa en el HTML, la red… (ButtonContainer, InputContainer). */
+  protected listen(_action: Action, _relation: TriggerRelation): void {}
+
+  /** Hook realidad: qué hace este lugar cuando su widget recibe una orden. */
   execute(_output: Output): void {}
 
-  /** La realidad avisa a su widget: el evento nace en este nivel y sube desde ahí. */
-  protected emit(trigger: Trigger, resource?: Ref): void {
-    this.widget?.dispatched({
-      event: { trigger, time: new Date(), target: this },
-      resource,
-    })
+  /** La realidad avisa a su widget: la señal nace en este nivel y sube desde ahí. */
+  protected emit(trigger: Trigger, resource?: Resource): void {
+    this.widget?.dispatched(signal(trigger, this, resource))
   }
 }

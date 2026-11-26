@@ -1,6 +1,7 @@
 import { Port, TypePart, TriggerRelation, Action, Output } from 'core/types'
 import { HtmlNode } from '../../../core/html-container'
 import { Widget } from 'core/widget'
+import { signal } from 'core/resource'
 import { actions } from '../../../core/types'
 
 export const trigger = { action: actions.submit, state: 'finished' }
@@ -18,20 +19,14 @@ class InputContainer extends HtmlNode {
     this.name = name
   }
 
-  protected addListeners(action: Action, relation: TriggerRelation): void {
+  protected listen(action: Action, relation: TriggerRelation): void {
     const el = this.element as HTMLInputElement
     el.addEventListener(action.verb, () => {
       const widget = this.widget
       if (!widget) return
       widget.set(this.name, el.value) // muta la caja: la fuente única
-      widget.dispatched({
-        event: {
-          trigger: relation.trigger,
-          time: new Date(),
-          target: el,
-        },
-        resource: widget.ref(this.name), // siempre la misma caja, nunca un objeto nuevo
-      })
+      // siempre la misma caja, nunca un objeto nuevo
+      widget.dispatched(signal(relation.trigger, el, widget.ref(this.name)))
     })
   }
 

@@ -1,9 +1,7 @@
-import { Action, Output, Port, Trigger, TriggerRelation } from './types'
+import { Action, Output, Port, Resource, Trigger, TriggerRelation } from './types'
 
-type DispatchHandler = (output: Output) => void
-
-/** La caja del valor: la crea la primitiva y todos los niveles apuntan a la misma. */
-export type Ref = NonNullable<Output['resource']>
+// Piezas del core. 'Resource' es solo la caja ({ type, value }): la crea la primitiva
+// y todos los niveles apuntan a la misma.
 
 /** Clave lógica de un trigger: la acción en ese estado (change + finished → 'changed'). */
 export const triggerKey = (trigger?: Trigger): string | undefined => {
@@ -11,120 +9,77 @@ export const triggerKey = (trigger?: Trigger): string | undefined => {
   return typeof key === 'string' ? key : undefined
 }
 
-export abstract class Resource {
-  /** Referencias por tipo (no valores): la fuente vive en la primitiva. */
-  private resources: Record<string, Ref> = {}
-  /** Como addEventListener, pero para señales lógicas (submitted → …). */
-  private listeners = new Map<string, DispatchHandler[]>()
-  /** Switch hacia abajo: clave de trigger → hijos que la esperan (port.trigger). */
-  private triggers = new Map<string, Resource[]>()
-  /** Traducciones ya registradas ('changed→saved'), para no subir dos veces lo mismo. */
-  private relayed = new Set<string>()
-  public port!: Port
-  /** Padre lógico en la cadena de dispatch (Widget/Mother). */
-  parent: Resource | null = null
+/** La única forma de armar la señal que viaja (arriba con dispatched, abajo con execute). */
+export const signal = (trigger: Trigger, target: unknown, resource?: Resource): Output => ({
+  event: { trigger, time: new Date(), target },
+  resource,
+})
+
+/** Recorre port.relations: cada acción que escucha, con la relation que la traduce. */
+export const eachRelation = (
+  port: Port,
+  fn: (action: Action, relation: TriggerRelation) => void,
+): void => {
+  if (!Array.isArray(port.relations)) return
+  port.relations.forEach((relation) => {
+    relation?.triggers?.forEach((action) => fn(action, relation))
+  })
+}
+
+/**
+ * Matriz (switch): clave → lista. Una entrada no se repite bajo la misma clave.
+ * `id` dice cuándo dos entradas son la misma (por defecto, la misma instancia).
+ */
+export class Matrix<T> {
+  private readonly table = new Map<string, T[]>()
+
+  constructor(private readonly id: (item: T) => unknown = (item) => item) {}
+
+  /** Agrega; devuelve false si ya estaba (no se duplica). */
+  add(key: string, item: T): boolean {
+    const list = this.table.get(key) ?? []
+    const id = this.id(item)
+    if (list.some((x) => this.id(x) === id)) return false
+    list.push(item)
+    this.table.set(key, list)
+    return true
+  }
+
+  get(key: string | undefined): readonly T[] {
+    return (key && this.table.get(key)) || []
+  }
+}
+
+/** Memoria de referencias por tipo (no valores): la fuente vive en la primitiva. */
+export class Boxes {
+  private readonly refs: Record<string, Resource> = {}
 
   /** Valor vivo: se lee de la caja, siempre el actual. */
-  public get(key: string): unknown {
-    return this.resources[key]?.value
+  get(key: string): unknown {
+    return this.refs[key]?.value
   }
 
-  /** La caja misma (para pasarla en un dispatch). */
-  public ref(key: string): Ref | undefined {
-    return this.resources[key]
+  /** La caja misma (para pasarla en una señal). */
+  ref(key: string): Resource | undefined {
+    return this.refs[key]
   }
 
-  /** Escribe en la caja; si no existe, este nivel la crea (es la primitiva). */
-  public set(key: string, value: unknown): void {
-    const ref = this.resources[key]
+  /** Escribe en la caja; si no existe, la crea (este nivel es la primitiva). */
+  set(key: string, value: unknown): void {
+    const ref = this.refs[key]
     if (ref) ref.value = value
-    else this.resources[key] = { type: key, value }
+    else this.refs[key] = { type: key, value }
   }
 
   /** Apunta a una caja ajena. Asigna un puntero, no copia el valor. */
-  protected link(ref: Ref): void {
-    this.resources[ref.type] = ref
+  link(ref: Resource): void {
+    this.refs[ref.type] = ref
   }
 
-  /** Al montar: tomar las cajas de un hijo para tenerlas antes del primer evento. */
-  protected adopt(child: Resource): void {
-    for (const ref of Object.values(child.resources)) {
-      if (!this.resources[ref.type]) this.link(ref)
+  /** Toma las cajas de otro nivel que todavía no tiene. */
+  adopt(other: Boxes): void {
+    for (const ref of Object.values(other.refs)) {
+      if (!this.refs[ref.type]) this.link(ref)
     }
   }
-
-  /** Suscripción lógica (análogo a element.addEventListener). */
-  protected on(signal: string, handler: DispatchHandler): void {
-    const list = this.listeners.get(signal) ?? []
-    if (list.includes(handler)) return // como addEventListener: el mismo handler no se duplica
-    list.push(handler)
-    this.listeners.set(signal, list)
-  }
-
-  /** Arma el switch una sola vez, con los hijos ya instanciados. */
-  protected mapTriggers(children: Resource[]): void {
-    this.triggers.clear()
-    for (const child of children) {
-      const key = triggerKey(child.port?.trigger)
-      if (!key) continue
-      const list = this.triggers.get(key) ?? []
-      list.push(child)
-      this.triggers.set(key, list)
-    }
-  }
-
-  protected addListeners(action: Action, relation: TriggerRelation): void {
-    const out = triggerKey(relation.trigger)
-    for (const key of [action.verb, action.finished, action.progress, action.actor]) {
-      if (!key) continue
-      // misma traducción (escucho key → emito out) ya registrada: no duplicar
-      const pair = `${key}→${out}`
-      if (this.relayed.has(pair)) continue
-      this.relayed.add(pair)
-      this.on(key, (output) => {
-        this.parent?.dispatched(
-          {
-            event: {
-              trigger: relation.trigger,
-              time: new Date(),
-              target: this,
-            },
-            resource: output.resource,
-          },
-          this,
-        )
-      })
-    }
-  }
-
-  /**
-   * Llega un evento a este nivel.
-   * `from` es el hijo directo que lo trajo (null si nació en este mismo nivel).
-   */
-  public dispatched(output: Output, from: Resource | null = null): void {
-
-    // guardar el puntero a la caja que llega (último que emitió ese tipo)
-    if (typeof output.resource?.type === 'string') this.link(output.resource)
-
-    const key = triggerKey(output.event.trigger)
-
-    // abajo: hermanos que esperan este trigger, menos el que lo trajo
-    if (key) {
-      this.triggers.get(key)?.forEach((child) => {
-        if (child !== from) child.execute(output)
-      })
-    }
-
-    // arriba: traducir con relations, o subir el mismo output
-    const handlers = key ? this.listeners.get(key) : undefined
-    if (handlers?.length) {
-      for (const handler of handlers) handler(output)
-      return
-    }
-
-    this.parent?.dispatched(output, this)
-  }
-
-  /** Orden que baja desde el padre. Cada Widget decide qué hace con ella. */
-  public execute(_output: Output): void {}
 }
