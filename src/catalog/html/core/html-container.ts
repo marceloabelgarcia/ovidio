@@ -28,7 +28,7 @@ export class HtmlContainer extends Mother {
 
   /**
    * Cuando la realidad ya existe: de las relations solo toma qué acciones sensar.
-   * El lugar cuenta lo que pasó, conjugado ('released', 'changed'); traducirlo es del jefe (Widget.relay).
+   * El lugar cuenta lo que pasó, conjugado ('released', 'changed'); contarlo con su frase es del jefe (su encargo en Mother.entrust).
    */
   protected bindRelations(): void {
     // un sensor por acción: repetido = aviso doble

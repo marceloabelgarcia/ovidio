@@ -9,7 +9,7 @@ export const triggerKey = (trigger?: Trigger): string | undefined => {
   return typeof key === 'string' ? key : undefined
 }
 
-/** La única forma de armar la señal que viaja (arriba con dispatched, abajo con execute). */
+/** La única forma de armar la señal que viaja (arriba con receive, abajo con execute). */
 export const signal = (trigger: Trigger, target: unknown, resource?: Resource): Output => ({
   event: { trigger, time: new Date(), target },
   resource,

@@ -1,12 +1,12 @@
-import { Output, Port, Resource, Trigger, TriggerRelation } from './types'
+import { Output, Port, Resource, Trigger } from './types'
 import { Children, Mother } from './mother'
-import { Boxes, eachRelation, Matrix, signal, triggerKey } from './resource'
+import { Boxes, eachRelation, signal, triggerKey } from './resource'
 
 /**
  * La unidad recursiva: obrero de su padre y jefe de sus hijos.
- * Lo vertical es suyo: saber quién es su jefe, avisarle (traduciendo con relations),
+ * Lo vertical es suyo: saber quién es su jefe, contarle su frase (sus relations),
  * bajar órdenes (execute) y saber dónde está el recurso (referencias a las cajas).
- * Lo horizontal (dar a luz, alojar, conectar hermanos) es de su lugar: el Mother.
+ * Lo horizontal (dar a luz, alojar, conectar hermanos, recibir los avisos) es de su lugar: el Mother.
  */
 export class Widget {
   public port!: Port
@@ -14,12 +14,10 @@ export class Widget {
   public mother!: Mother
   /** Sus obreros (la receta ya nacida). */
   public children: Widget[] = []
-  /** Su jefe: a quién le avisa. */
+  /** Su jefe: a quién le cuenta. */
   public parent: Widget | null = null
   /** Referencias a las cajas, por tipo. */
   private readonly boxes = new Boxes()
-  /** Matriz de subida: clave que llega → trigger con el que se le avisa al jefe (port.relations). */
-  private readonly up = new Matrix<Trigger>(triggerKey)
 
   constructor(
     mother: Mother | null = null,
@@ -32,7 +30,11 @@ export class Widget {
       this.mother = mother
       mother.widget = this
 
-      eachRelation(port, (source, relation) => this.relay(source, relation))
+      // el encargo: le deja a su lugar cuándo molestarlo y qué frase va a contar
+      eachRelation(port, (source, relation) => {
+        const key = triggerKey(source)
+        if (key) mother.entrust(key, relation.trigger)
+      })
 
       // el lugar da a luz y aloja; el jefe los toma como suyos
       this.children = mother.appendChildren(children)
@@ -55,7 +57,8 @@ export class Widget {
     this.boxes.set(key, value)
   }
 
-  protected link(ref: Resource): void {
+  /** Apunta a una caja ajena (la usa su lugar cuando pasa un aviso). */
+  public link(ref: Resource): void {
     this.boxes.link(ref)
   }
 
@@ -64,30 +67,9 @@ export class Widget {
     this.boxes.adopt(child.boxes)
   }
 
-  /** Relevo: la fuente declarada (acción en esa forma) se le avisa al jefe como relation.trigger. */
-  protected relay(source: Trigger, relation: TriggerRelation): void {
-    const key = triggerKey(source)
-    if (key) this.up.add(key, relation.trigger)
-  }
-
-  /**
-   * Llega un aviso a este nivel.
-   * `from` es el obrero que lo trajo (null si nació en este mismo nivel).
-   */
-  public dispatched(output: Output, from: Widget | null = null): void {
-    // memoria: guardar el puntero a la caja que llega (último que emitió ese tipo)
-    if (typeof output.resource?.type === 'string') this.link(output.resource)
-
-    // horizontal: el lugar lo reparte entre los hermanos que lo esperan
-    this.mother?.distribute(output, from)
-
-    // vertical: traducir y avisar al jefe, o pasarle el mismo aviso
-    const outs = this.up.get(triggerKey(output.event.trigger))
-    if (outs.length) {
-      for (const out of outs) this.parent?.dispatched(signal(out, this, output.resource), this)
-      return
-    }
-    this.parent?.dispatched(output, this)
+  /** Su relato: cuenta su frase en la madre donde nació (la de su jefe). Lo llama su lugar. */
+  public tell(sentence: Trigger, output: Output): void {
+    this.parent?.mother?.receive(signal(sentence, this, output.resource), this)
   }
 
   /**
