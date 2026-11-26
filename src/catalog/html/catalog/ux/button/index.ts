@@ -10,11 +10,11 @@ export class ButtonContainer extends HtmlNode {
     super(button, port)
   }
 
-  /** Escucha la acción del DOM y la avisa en crudo ('click'); el jefe la traduce. */
+  /** Escucha la acción del DOM y la cuenta conjugada: el click pasó → 'released'. El jefe la traduce. */
   protected listen(action: Action): void {
     const el = this.element as HTMLButtonElement
     el.addEventListener(action.verb, ($event) => {
-      this.emit({ action, state: 'verb' }, { type: 'button', value: $event.target })
+      this.emit({ action, state: 'finished' }, { type: 'button', value: $event.target })
     })
   }
 }

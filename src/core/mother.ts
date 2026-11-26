@@ -30,12 +30,12 @@ export abstract class Mother {
 
   /**
    * Cuando la realidad ya existe: de las relations solo toma qué acciones escuchar.
-   * El lugar avisa en crudo lo que pasó ('click'); traducirlo es del jefe (Widget.relay).
+   * El lugar cuenta lo que pasó, conjugado ('released', 'changed'); traducirlo es del jefe (Widget.relay).
    */
   protected bindRelations(): void {
     // un listener por acción: repetido = aviso doble
     const heard = new Set<string>()
-    eachRelation(this.port, (action) => {
+    eachRelation(this.port, ({ action }) => {
       if (heard.has(action.verb)) return
       heard.add(action.verb)
       this.listen(action)
@@ -60,7 +60,10 @@ export abstract class Mother {
     }
   }
 
-  /** Hook realidad: escuchar esa acción en el HTML, la red… y avisarla en crudo con `emit`. */
+  /**
+   * Hook realidad: escuchar esa acción en el HTML, la red… y contarla con `emit`.
+   * Un evento de la realidad es un hecho: sale conjugado en participio (state 'finished').
+   */
   protected listen(_action: Action): void {}
 
   /** Hook realidad: qué hace este lugar cuando su widget recibe una orden. */

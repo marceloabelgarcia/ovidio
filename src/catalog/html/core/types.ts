@@ -53,7 +53,7 @@ export const trigger: Trigger = {
 export const relations: TriggerRelation[] =  [
         {
             trigger: { action: actions.parent, state: 'finished' },
-            triggers: [actions.child],
+            triggers: [{ action: actions.child, state: 'finished' }],
         },
     ]
 
@@ -61,10 +61,10 @@ export const relations: TriggerRelation[] =  [
 export const output: TriggerRelation[] = [
     {
         trigger: { action: actions.modify, state: 'finished' },
-        triggers: [actions.change],
+        triggers: [{ action: actions.change, state: 'finished' }],
     },
     {
         trigger: { action: actions.save, state: 'finished' },
-        triggers: [actions.submit],
+        triggers: [{ action: actions.submit, state: 'finished' }],
     },
 ]

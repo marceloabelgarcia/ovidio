@@ -85,7 +85,7 @@ export class DemoWidget extends Widget {
           relations: [
             {
               trigger: { action: actions.submit, state: 'finished' },
-              triggers: [actions.click],
+              triggers: [{ action: actions.click, state: 'finished' }],
             },
           ],
         },
@@ -116,7 +116,7 @@ export class DemoWidget extends Widget {
       relations: [
         {
           trigger: { action: actions.save, state: 'finished' },
-          triggers: [actions.submit],
+          triggers: [{ action: actions.submit, state: 'finished' }],
         },
       ],
     })
@@ -138,7 +138,7 @@ export class HttpDemo extends Widget {
     super(new ContentHost(), [
       {
         child: Button,
-        port: { relations: [{ trigger: load, triggers: [actions.click] }] },
+        port: { relations: [{ trigger: load, triggers: [{ action: actions.click, state: 'finished' }] }] },
       },
       { child: Get, port: { input: address, trigger: load } },
       { child: Get, port: { input: zip, trigger: load } },

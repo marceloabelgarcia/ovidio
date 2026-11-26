@@ -18,7 +18,7 @@ class InputContainer extends HtmlNode {
     this.name = name
   }
 
-  /** Escucha la acción del DOM y la avisa en crudo ('change'); el jefe la traduce. */
+  /** Escucha la acción del DOM y la cuenta conjugada: el valor cambió → 'changed'. El jefe la traduce. */
   protected listen(action: Action): void {
     const el = this.element as HTMLInputElement
     el.addEventListener(action.verb, () => {
@@ -26,7 +26,7 @@ class InputContainer extends HtmlNode {
       if (!widget) return
       widget.set(this.name, el.value) // muta la caja: la fuente única
       // siempre la misma caja, nunca un objeto nuevo
-      this.emit({ action, state: 'verb' }, widget.ref(this.name))
+      this.emit({ action, state: 'finished' }, widget.ref(this.name))
     })
   }
 
@@ -46,13 +46,13 @@ class InputContainer extends HtmlNode {
 export class Input extends Widget {
   constructor(port: Port = {}) {
     const { name } = (port.input as TypePart) ?? {}
-    // un solo port para el jefe y su lugar: el lugar escucha 'change', el jefe lo avisa como 'changed'
+    // un solo port para el jefe y su lugar: el lugar escucha 'change' y lo cuenta 'changed'; el jefe lo avisa igual
     const relations: TriggerRelation[] = [
       {
         trigger: { action: actions.change, state: 'finished' },
         triggers: [
-          actions.change,
-          // actions.input
+          { action: actions.change, state: 'finished' },
+          // { action: actions.input, state: 'finished' },
         ],
       },
       ...(port.relations ?? []),

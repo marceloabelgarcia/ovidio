@@ -1,4 +1,4 @@
-import { Action, Output, Port, Resource, Trigger, TriggerRelation } from './types'
+import { Output, Port, Resource, Trigger, TriggerRelation } from './types'
 
 // Piezas del core. 'Resource' es solo la caja ({ type, value }): la crea la primitiva
 // y todos los niveles apuntan a la misma.
@@ -15,14 +15,14 @@ export const signal = (trigger: Trigger, target: unknown, resource?: Resource): 
   resource,
 })
 
-/** Recorre port.relations: cada acción que escucha, con la relation que la traduce. */
+/** Recorre port.relations: cada fuente que escucha (acción + forma), con la relation que la traduce. */
 export const eachRelation = (
   port: Port,
-  fn: (action: Action, relation: TriggerRelation) => void,
+  fn: (source: Trigger, relation: TriggerRelation) => void,
 ): void => {
   if (!Array.isArray(port.relations)) return
   port.relations.forEach((relation) => {
-    relation?.triggers?.forEach((action) => fn(action, relation))
+    relation?.triggers?.forEach((source) => fn(source, relation))
   })
 }
 

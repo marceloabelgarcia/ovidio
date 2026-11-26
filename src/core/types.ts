@@ -27,9 +27,14 @@ export type Trigger = {
     state: State
 }
 
+/**
+ * Una frase: cuando llega alguno de `triggers` (acción en una forma: orden, gerundio,
+ * participio o sustantivo), este nivel lo cuenta como `trigger`.
+ * Ej.: cuando el botón fue soltado (click/finished) → orden: cargar (load/verb).
+ */
 export type TriggerRelation = {
     trigger: Trigger,
-    triggers: Action[]
+    triggers: Trigger[]
 }
 
 

@@ -1,4 +1,4 @@
-import { Action, Output, Port, Resource, Trigger, TriggerRelation } from './types'
+import { Output, Port, Resource, Trigger, TriggerRelation } from './types'
 import { Children, Mother } from './mother'
 import { Boxes, eachRelation, Matrix, signal, triggerKey } from './resource'
 
@@ -32,7 +32,7 @@ export class Widget {
       this.mother = mother
       mother.widget = this
 
-      eachRelation(port, (action, relation) => this.relay(action, relation))
+      eachRelation(port, (source, relation) => this.relay(source, relation))
 
       // el lugar da a luz y aloja; el jefe los toma como suyos
       this.children = mother.appendChildren(children)
@@ -64,11 +64,10 @@ export class Widget {
     this.boxes.adopt(child.boxes)
   }
 
-  /** Relevo: cada estado de la acción se le avisa al jefe como relation.trigger. */
-  protected relay(action: Action, relation: TriggerRelation): void {
-    for (const key of [action.verb, action.finished, action.progress, action.actor]) {
-      if (key) this.up.add(key, relation.trigger)
-    }
+  /** Relevo: la fuente declarada (acción en esa forma) se le avisa al jefe como relation.trigger. */
+  protected relay(source: Trigger, relation: TriggerRelation): void {
+    const key = triggerKey(source)
+    if (key) this.up.add(key, relation.trigger)
   }
 
   /**
