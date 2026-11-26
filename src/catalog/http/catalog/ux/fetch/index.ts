@@ -1,5 +1,5 @@
 import { Output, Port, TypePart } from 'core/types'
-import { HttpNode } from '../../../core/http-node'
+import { HttpContainer } from '../../../core/http-container'
 import { actions } from '../../../core/types'
 
 /** Mock del backend, fijo: un catálogo ordenado por TypePart (raíz → sus partes). */
@@ -10,7 +10,7 @@ const CATALOG = '/mock/catalog.json'
  * Hace con la red lo que InputContainer hace con el DOM:
  * escribe en la caja del widget y emite la caja.
  */
-export class FetchContainer extends HttpNode {
+export class FetchContainer extends HttpContainer {
   /** Entrada del catálogo que pide: el name del TypePart de port.input. */
   readonly name: string
 

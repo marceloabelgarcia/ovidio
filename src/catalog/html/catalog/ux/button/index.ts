@@ -1,7 +1,7 @@
-import { HtmlNode } from '../../../core/html-container'
+import { HtmlContainer } from '../../../core/html-container'
 import { Port, Action } from 'core/types'
 
-export class ButtonContainer extends HtmlNode {
+export class ButtonContainer extends HtmlContainer {
   constructor(port: Port = {}) {
     const button = document.createElement('button')
     button.textContent = 'Click me'

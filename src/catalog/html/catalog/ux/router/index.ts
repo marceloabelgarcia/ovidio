@@ -1,4 +1,4 @@
-import { HtmlNode } from '../../../core/html-container'
+import { HtmlContainer } from '../../../core/html-container'
 import type { Children } from 'core/mother'
 import type { Widget } from 'core/widget'
 import { Port } from 'core/types'
@@ -8,7 +8,7 @@ import { Port } from 'core/types'
  * Cada hijo de la receta dice su ruta en port.input ('/', '/http', …).
  * Sin coincidencia no se monta nada. Navegar = cargar otra URL (no hay desmontar).
  */
-export class RouterContainer extends HtmlNode {
+export class RouterContainer extends HtmlContainer {
   private readonly path = location.pathname.replace(/\/$/, '') || '/'
 
   constructor(port: Port = {}) {

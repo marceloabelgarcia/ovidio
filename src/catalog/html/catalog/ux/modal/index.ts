@@ -1,8 +1,8 @@
-import { HtmlNode } from '../../../core/html-container'
+import { HtmlContainer } from '../../../core/html-container'
 import { Output, Port } from 'core/types'
 
 /** <dialog> de daisyUI: se abre cuando su widget recibe una orden. */
-export class ModalContainer extends HtmlNode {
+export class ModalContainer extends HtmlContainer {
   private readonly message: HTMLElement
 
   constructor(port: Port = {}) {

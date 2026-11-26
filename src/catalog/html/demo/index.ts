@@ -1,6 +1,6 @@
 import { Port } from 'core/types'
 import { Widget } from 'core/widget'
-import { HtmlNode } from '../core/html-container'
+import { HtmlContainer } from '../core/html-container'
 import { Button } from '../catalog/ui/button'
 import { Input } from '../catalog/ui/input'
 import { Display } from '../catalog/ui/display'
@@ -14,7 +14,7 @@ import { Get } from '../../http/catalog/ui/get'
 import { actions as http } from '../../http/core/types'
 
 /** Host columna: hijos uno debajo de otro. */
-export class Col extends HtmlNode {
+export class Col extends HtmlContainer {
   constructor(port: Port = {}) {
     const el = document.createElement('div')
     el.className = 'flex flex-col gap-2 p-2 min-h-screen border border-black'
@@ -23,7 +23,7 @@ export class Col extends HtmlNode {
 }
 
 /** Host fila: hijos en horizontal. */
-export class Row extends HtmlNode {
+export class Row extends HtmlContainer {
   constructor(port: Port = {}) {
     const el = document.createElement('div')
     el.className = 'flex flex-row gap-2 p-2 flex-1 border border-blue-500'
@@ -32,7 +32,7 @@ export class Row extends HtmlNode {
 }
 
 /** Panel genérico con host abierto + etiqueta. */
-class Panel extends HtmlNode {
+class Panel extends HtmlContainer {
   constructor(label: string, className: string, port: Port = {}) {
     const el = document.createElement('div')
     el.className = className
@@ -66,7 +66,7 @@ export class RightPanel extends Widget {
 }
 
 /** Host del contenido central (abierto). */
-class ContentHost extends HtmlNode {
+class ContentContainer extends HtmlContainer {
   constructor(port: Port = {}) {
     const el = document.createElement('div')
     el.className = 'flex flex-col gap-2 p-2 flex-1 border border-red-500'
@@ -77,7 +77,7 @@ class ContentHost extends HtmlNode {
 /** Contenido del demo: button + inputs. */
 export class DemoWidget extends Widget {
   constructor(port: Port = {}) {
-    super(new ContentHost(), [
+    super(new ContentContainer(), [
       {
         child: Button,
         port: {
@@ -135,7 +135,7 @@ const load = { action: http.load, state: 'verb' } as const
  */
 export class HttpDemo extends Widget {
   constructor(port: Port = {}) {
-    super(new ContentHost(), [
+    super(new ContentContainer(), [
       {
         child: Button,
         port: { relations: [{ trigger: load, triggers: [{ action: actions.click, state: 'finished' }] }] },

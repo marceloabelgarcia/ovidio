@@ -7,7 +7,7 @@ export type HtmlContent = HTMLElement | Text
 /**
  * Mother HTML: ella misma es el host (element + append).
  */
-export class HtmlNode extends Mother {
+export class HtmlContainer extends Mother {
   constructor(
     public readonly element: HtmlContent,
     port: Port = {},
@@ -17,7 +17,7 @@ export class HtmlNode extends Mother {
   }
 
   append(child: Mother): void {
-    if (!(child instanceof HtmlNode)) return
+    if (!(child instanceof HtmlContainer)) return
     if (this.element instanceof HTMLElement) {
       this.element.appendChild(child.element)
     }

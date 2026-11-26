@@ -1,11 +1,11 @@
 import { Port, TypePart, TriggerRelation, Action, Output } from 'core/types'
-import { HtmlNode } from '../../../core/html-container'
+import { HtmlContainer } from '../../../core/html-container'
 import { Widget } from 'core/widget'
 import { actions } from '../../../core/types'
 
 export const trigger = { action: actions.submit, state: 'finished' }
 
-class InputContainer extends HtmlNode {
+class InputContainer extends HtmlContainer {
   readonly name: string
 
   constructor(port: Port = {}) {

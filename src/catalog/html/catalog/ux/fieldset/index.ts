@@ -1,8 +1,8 @@
-import { HtmlNode } from '../../../core/html-container'
+import { HtmlContainer } from '../../../core/html-container'
 import { Port, TypePart } from 'core/types'
 
 /** <fieldset> con su <legend> = el name del TypePart. */
-export class FieldsetContainer extends HtmlNode {
+export class FieldsetContainer extends HtmlContainer {
   constructor(port: Port = {}) {
     const el = document.createElement('fieldset')
     el.className = 'fieldset border border-base-300 rounded-box p-3'

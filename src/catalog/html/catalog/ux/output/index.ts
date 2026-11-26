@@ -1,7 +1,7 @@
-import { HtmlNode, HtmlContent } from '../../../core/html-container'
+import { HtmlContainer, HtmlContent } from '../../../core/html-container'
 import { Output, Port, TypePart } from 'core/types'
 
-export class OutputContainer extends HtmlNode {
+export class OutputContainer extends HtmlContainer {
   /** Tipo que muestra (si port.input es TypePart); sin name muestra lo que llegue. */
   readonly name?: string
 
