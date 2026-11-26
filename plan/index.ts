@@ -7,6 +7,11 @@
  *
  * Los nombres de esta carpeta (Plan, Status, los campos y los archivos) son provisorios:
  * los decide el usuario.
+ *
+ * Cómo verificar un cambio (cada script explica en su cabecera qué mirar):
+ *   npx tsc --noEmit -p .
+ *   npx tsx --tsconfig tsconfig.json scripts/verify/trace.mts | diff - scripts/verify/trace.expected.txt
+ *   node scripts/verify/routes.mjs | diff - scripts/verify/routes.expected.txt   (con `npm run dev` corriendo)
  */
 import { plan as resonance } from './resonance'
 import { plan as history } from './history'

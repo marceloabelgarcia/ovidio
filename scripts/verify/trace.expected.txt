@@ -1,0 +1,58 @@
+montaje
+  dom-bind click
+  dom-bind change
+  dom-bind change
+click
+  dispatched Btn key=released from=- box=button:"btn" target=BtnMother
+  dispatched Page key=submitted from=Btn box=button:"btn" target=Btn
+  dispatched Root key=saved from=Page box=button:"btn" target=Page
+  execute SavedWatcher key=saved box=button:"btn"
+  dispatched Root key=modified from=Page box=button:"btn" target=Page
+  execute SavedWatcher key=modified box=button:"btn"
+in1 escribe Ana
+  dispatched In1 key=changed from=- box=name:"Ana" target=InMother
+  dispatched Page key=changed from=In1 box=name:"Ana" target=In1
+  execute In2 key=changed box=name:"Ana"
+  dispatched Root key=modified from=Page box=name:"Ana" target=Page
+  execute SavedWatcher key=modified box=name:"Ana"
+in2 escribe Luis
+  dispatched In2 key=changed from=- box=name:"Luis" target=InMother
+  dispatched Page key=changed from=In2 box=name:"Luis" target=In2
+  execute In1 key=changed box=name:"Luis"
+  dispatched Root key=modified from=Page box=name:"Luis" target=Page
+  execute SavedWatcher key=modified box=name:"Luis"
+net
+  dispatched Net key=loading from=- box=addr:undefined target=NetMother
+  dispatched Page key=loading from=Net box=addr:undefined target=NetMother
+  dispatched Root key=loading from=Page box=addr:undefined target=NetMother
+  dispatched Net key=loaded from=- box=addr:{"street":"x"} target=NetMother
+  dispatched Page key=loaded from=Net box=addr:{"street":"x"} target=NetMother
+  execute OnLoad key=loaded box=addr:{"street":"x"}
+  dispatched Root key=loaded from=Page box=addr:{"street":"x"} target=NetMother
+  dispatched Net key=failed from=- box=error:"boom" target=NetMother
+  dispatched Page key=failed from=Net box=error:"boom" target=NetMother
+  dispatched Root key=failed from=Page box=error:"boom" target=NetMother
+  execute FailWatcher key=failed box=error:"boom"
+  execute Shell key=failed box=error:"boom"
+  execute Alert key=failed box=error:"boom"
+  execute Deep key=failed box=error:"boom"
+boom (nace adentro de Alert)
+  dispatched Boom key=failed from=- box=error:"adentro" target=BoomMother
+  dispatched Alert key=failed from=Boom box=error:"adentro" target=BoomMother
+  execute Deep key=failed box=error:"adentro"
+  dispatched Shell key=failed from=Alert box=error:"adentro" target=BoomMother
+  dispatched Root key=failed from=Shell box=error:"adentro" target=BoomMother
+  execute FailWatcher key=failed box=error:"adentro"
+cajas
+  root name="Luis" addr={"street":"x"} error="adentro" button="btn"
+  page name="Luis" in1="Luis" in2="Luis"
+  misma caja: root/in2=true page/in1=false root/net=true
+form carga
+  dispatched NetP key=loading from=- box=addr:undefined target=NetPMother
+  dispatched Form key=loading from=NetP box=addr:undefined target=NetPMother
+  dispatched Screen key=disable from=Form box=addr:undefined target=Form
+  execute DisableWatcher key=disable box=addr:undefined
+  dispatched NetP key=loaded from=- box=addr:undefined target=NetPMother
+  dispatched Form key=loaded from=NetP box=addr:undefined target=NetPMother
+  dispatched Screen key=enable from=Form box=addr:undefined target=Form
+  execute EnableWatcher key=enable box=addr:undefined
