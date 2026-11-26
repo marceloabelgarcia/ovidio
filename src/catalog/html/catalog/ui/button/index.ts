@@ -1,21 +1,7 @@
 import { ButtonContainer } from '../../ux/button'
 import { Port } from 'core/types'
 import { Widget } from 'core/widget'
-import { OutputContainer } from '../../ux/output'
-
-
-export class DisplayButton extends Widget {
-  constructor(port: Port = {}) {
-    super(new OutputContainer(port), [], port)
-  }
-}
-
-
-export class DisplayContent extends Widget {
-  constructor(port: Port = {}) {
-    super(new OutputContainer(port), [], port)
-  }
-}
+import { Display } from '../display'
 
 export class Button extends Widget {
   constructor(port: Port = {}) {
@@ -27,8 +13,8 @@ export class Button extends Widget {
     super(
       new ButtonContainer(port),
       [
-        { child: DisplayButton, port: { input: "HOLA" } },
-        { child: DisplayButton, port: { input: content } },
+        { child: Display, port: { input: "HOLA" } },
+        { child: Display, port: { input: content } },
       ],
       port,
     )

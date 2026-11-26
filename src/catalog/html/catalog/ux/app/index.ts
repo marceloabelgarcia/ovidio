@@ -1,7 +1,7 @@
 import { HtmlContainer } from '../../../core/html-container'
 import { Port } from 'core/types'
 
-/** La primitiva fija: el #app del documento, donde vive todo el árbol. */
+/** El lugar fijo: el #app del documento, donde vive todo el árbol. */
 export class AppContainer extends HtmlContainer {
   constructor(port: Port = {}) {
     const el = document.querySelector<HTMLElement>('#app')

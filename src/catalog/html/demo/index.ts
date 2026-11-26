@@ -81,7 +81,6 @@ export class DemoWidget extends Widget {
       {
         child: Button,
         port: {
-          ...port,
           relations: [
             {
               trigger: { action: actions.submit, state: 'finished' },
@@ -113,11 +112,14 @@ export class DemoWidget extends Widget {
         },
       },
     ], {
+      // el contrato que le dio su padre se respeta; su relation propia se suma
+      ...port,
       relations: [
         {
           trigger: { action: actions.save, state: 'finished' },
           triggers: [{ action: actions.submit, state: 'finished' }],
         },
+        ...(port.relations ?? []),
       ],
     })
   }

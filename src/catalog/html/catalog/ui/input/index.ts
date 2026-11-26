@@ -3,8 +3,6 @@ import { HtmlContainer } from '../../../core/html-container'
 import { Widget } from 'core/widget'
 import { actions } from '../../../core/types'
 
-export const trigger = { action: actions.submit, state: 'finished' }
-
 class InputContainer extends HtmlContainer {
   readonly name: string
 
