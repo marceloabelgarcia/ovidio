@@ -8,7 +8,8 @@ import { Modal } from '../catalog/ui/modal'
 import { Fieldset } from '../catalog/ui/fieldset'
 import { actions } from '../core/types'
 import { name, door, address, zip } from './type'
-import { App } from '../catalog/ux/app'
+import { AppContainer } from '../catalog/ux/app'
+import { RouterContainer } from '../catalog/ux/router'
 import { Get } from '../../http/catalog/ui/get'
 import { actions as http } from '../../http/core/types'
 
@@ -149,50 +150,71 @@ export class HttpDemo extends Widget {
   }
 }
 
-export class ContentWidget extends Widget {
-  constructor(port: Port = {}) {
-    super(new ContentHost(), [
-      { child: HttpDemo, port: {} },
-      { child: DemoWidget, port: {} },
-    ])
-  }
-}
-
+/** La carcasa: se abre sola cuando un 'failed' llega a la página. */
+const errorModal = {
+  child: Modal,
+  port: { input: 'Error', trigger: { action: http.fail, state: 'finished' } },
+} as const
 
 /** main: left | DemoWidget | right */
-export class Main extends Widget {
+export class DemoMain extends Widget {
   constructor(port: Port = {}) {
     super(new Row(), [
       { child: LeftPanel, port: {} },
-      { child: ContentWidget, port: {} },
+      { child: DemoWidget, port: {} },
       { child: RightPanel, port: {} },
     ], port)
   }
 }
 
-/** page: header / main / footer */
-export class Page extends Widget {
+/** main: left | HttpDemo | right */
+export class HttpMain extends Widget {
   constructor(port: Port = {}) {
-    super(new Col(), [
-      { child: Header, port: {} },
-      { child: Main, port: {} },
-      { child: Footer, port: {} },
-      // la carcasa: se abre sola cuando un 'failed' llega a este nivel
-      {
-        child: Modal,
-        port: { input: 'Error', trigger: { action: http.fail, state: 'finished' } },
-      },
+    super(new Row(), [
+      { child: LeftPanel, port: {} },
+      { child: HttpDemo, port: {} },
+      { child: RightPanel, port: {} },
     ], port)
   }
 }
 
-/** Raíz: App(#app) → Page. */
-export class AppDemo extends Widget {
-  constructor(el: HTMLElement) {
-    super(new App(el), [
-      { child: Page, port: {} },
-    ])
+/** Página '/': header / DemoMain / footer. */
+export class DemoPage extends Widget {
+  constructor(port: Port = {}) {
+    super(new Col(), [
+      { child: Header, port: {} },
+      { child: DemoMain, port: {} },
+      { child: Footer, port: {} },
+      errorModal,
+    ], port)
   }
 }
 
-export { AppDemo as Demo }
+/** Página '/http': header / HttpMain / footer. */
+export class HttpPage extends Widget {
+  constructor(port: Port = {}) {
+    super(new Col(), [
+      { child: Header, port: {} },
+      { child: HttpMain, port: {} },
+      { child: Footer, port: {} },
+      errorModal,
+    ], port)
+  }
+}
+
+/** Las rutas: cada página dice la suya en su input; se monta solo la que coincide. */
+export class DemoRouter extends Widget {
+  constructor(port: Port = {}) {
+    super(new RouterContainer(port), [
+      { child: DemoPage, port: { input: '/' } },
+      { child: HttpPage, port: { input: '/http' } },
+    ], port)
+  }
+}
+
+/** Raíz cerrada: App(#app) → Router → página. */
+export class DemoApp extends Widget {
+  constructor(port: Port = {}) {
+    super(new AppContainer(port), [{ child: DemoRouter, port: {} }], port)
+  }
+}

@@ -1,7 +1,11 @@
 import { HtmlNode } from '../../../core/html-container'
+import { Port } from 'core/types'
 
-export class App extends HtmlNode {
-  constructor(el: HTMLElement) {
-    super(el)
+/** La primitiva fija: el #app del documento, donde vive todo el árbol. */
+export class AppContainer extends HtmlNode {
+  constructor(port: Port = {}) {
+    const el = document.querySelector<HTMLElement>('#app')
+    if (!el) throw new Error('#app no encontrado')
+    super(el, port)
   }
 }
