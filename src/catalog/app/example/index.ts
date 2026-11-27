@@ -1,19 +1,13 @@
 import { Port } from 'core/types'
 import { Widget } from 'core/widget'
-import { HtmlContainer } from 'catalog/html/core/html-container'
-import { actions as http } from 'catalog/http/core/types'
+import { actions as http } from 'catalog/services/core/types'
 import { DemoWidget, HttpDemo } from 'catalog/form/example'
-import { AppContainer, Col, Modal, RouterContainer, Row } from '../slot'
-
-/** Panel genérico con host abierto + etiqueta. */
-class Panel extends HtmlContainer {
-  constructor(label: string, className: string, port: Port = {}) {
-    const el = document.createElement('div')
-    el.className = className
-    el.textContent = label
-    super(el, port)
-  }
-}
+import { AppContainer } from 'catalog/html/ux/app'
+import { RouterContainer } from 'catalog/html/ux/router'
+import { Col } from 'catalog/html/ux/col'
+import { Row } from 'catalog/html/ux/row'
+import { Modal } from 'catalog/html/ux/modal'
+import { Panel } from 'catalog/html/ux/panel'
 
 export class Header extends Widget {
   constructor(port: Port = {}) {

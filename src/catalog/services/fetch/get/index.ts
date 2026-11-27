@@ -1,6 +1,6 @@
 import { Port, TypePart } from 'core/types'
 import { Widget } from 'core/widget'
-import { FetchContainer } from './container'
+import { FetchContainer } from '../index'
 
 /**
  * Primitiva de sistema: como Input, pero el valor llega del backend (actor 'system').
@@ -16,5 +16,3 @@ export class Get extends Widget {
     if (name) this.set(name, undefined) // la caja nace acá
   }
 }
-
-export { FetchContainer } from './container'

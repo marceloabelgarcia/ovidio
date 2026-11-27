@@ -1,7 +1,7 @@
 import { ButtonContainer } from './container'
 import { Port } from 'core/types'
 import { Widget } from 'core/widget'
-import { Display } from 'catalog/form/primitive/display'
+import { Display } from 'catalog/html/ux/display'
 
 export class Button extends Widget {
   constructor(port: Port = {}) {

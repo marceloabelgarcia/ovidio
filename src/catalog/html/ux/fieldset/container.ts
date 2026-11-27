@@ -5,7 +5,7 @@ import { Port, TypePart } from 'core/types'
 export class FieldsetContainer extends HtmlContainer {
   constructor(port: Port = {}) {
     const el = document.createElement('fieldset')
-    el.className = 'fieldset border border-base-300 rounded-box p-3'
+    el.className = 'fieldset border border-base-300 border-green-500 rounded-box p-3'
 
     const part = port.input as TypePart | undefined
     if (part?.name) {

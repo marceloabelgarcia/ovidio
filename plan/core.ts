@@ -4,13 +4,14 @@ import type { Plan } from './index'
 export const plan: Plan = {
   title: 'Decisiones abiertas del core',
   status: 'open',
-  updated: '2026-11-26',
+  updated: '2026-11-27',
   why: 'El core quedó ordenado (lo vertical es del jefe, lo horizontal del lugar, una Matrix por nivel), pero quedan preguntas de gramática y de flujo.',
   agreed: [
     '"El port siempre es input, trigger, relations."',
     '"No quiero romper mi core." Los conceptos nuevos se diseñan juntos antes de escribir código.',
     '"No hay que inventar más nada de core, solo ir ajustando cosas que sean genéricas."',
     '"No es cuestión de automatizar la carga": algo automático necesita un trigger con dueño. Quizás una primitiva que haga el primer `mounted`; todavía no se inventa.',
+    'Una capacidad más en el core (2026-11-27): la profundidad, `Breakdown` en `core/breakdown.ts`. Es un Widget cuyos hijos salen de la forma de su sustantivo, no de una receta escrita. Nació de Fieldset (ver catalog).',
   ],
   proposed: [
     'El arco reflejo inclina el flujo hacia la opción b: lo local se resuelve local.',

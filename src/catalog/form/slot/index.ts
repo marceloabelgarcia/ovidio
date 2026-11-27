@@ -1,2 +1,2 @@
-// Lo que puede tener algo adentro.
-export * from './fieldset'
+// Vacío por ahora: Fieldset está en html/ux.
+export {}

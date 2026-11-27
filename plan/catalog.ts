@@ -24,6 +24,7 @@ export const plan: Plan = {
     '"No estamos armando una app, estamos armando catálogos." Por ahora, dos categorías grandes: un catálogo para construir apps y otro para construir formularios.',
     'Hay piezas que pueden tener algo dentro, como un slot de Vue (button, card, modal), y otras que no (los inputs).',
     '"Tú ordena, luego yo reviso todo, porque le vamos a dar varias vueltas."',
+    '"Quitemos de la existencia el Fieldset que extiende de Widget, y tenemos una capacidad más en el core" (2026-11-27): el desglose vive en `core/breakdown.ts` (`Breakdown`). La subclase dice su lugar (`static place`) y su hoja (`static leaf`); los hijos heredan el port con su parte como `input`. Lo usan Fieldset (hoja Display) y EditableFieldset (hoja Input, en el example de form).',
   ],
   proposed: [
     'Primera vuelta del orden, hecha (2026-11-27) y a revisar: `catalog/app` y `catalog/form`, cada uno con las mismas siete carpetas. `types/` y `data/` (input), `triggers/` (trigger), `relations/` (relations), `primitive/` (no puede tener nada dentro), `slot/` (puede) y `example/`. Cada pieza es una carpeta con `index.ts` (el widget) y `container.ts` (su lugar). Una carpeta vacía dice por qué.',
@@ -46,7 +47,9 @@ export const plan: Plan = {
     'Del inventario: `input` lleva cuatro cosas (TypePart, texto, elemento, ruta) y solo TypePart es sustantivo. ¿El texto y el elemento siguen entrando por `input`? ¿La ruta es el sustantivo de la página?',
     'Del inventario: `loading` es el gerundio de `load` (red) y también una palabra del layout: ¿es la misma en los dos mundos, o el layout la traduce? `click` tiene `progress: \'press\'`, que no es un gerundio.',
     'Del inventario: Get sale de su nivel solo por la opción a, porque no tiene relations; así le llegan `loaded` a Fieldset y `failed` al Modal. Input sale con su relation identidad (ver core).',
-    'El desglose por TypePart: ¿otro mecanismo del core junto a la matriz? Hoy Fieldset lo hace a mano y rodea la matriz.',
+    'Breakdown todavía reparte a mano y rodea la matriz. ¿El reparto por parte pasa por ella (la matriz decide quién y cuándo; la profundidad, qué parte)?',
+    'Breakdown: ¿las profundidades cuentan su propia frase o solo la raíz? ¿La caja del hijo es una copia o apunta adentro de la del padre (componer hacia arriba)? ¿La hoja la elige la clase o el `type` de cada hoja?',
+    'Nombres provisorios: `Breakdown` (candidatos: Desglose, Depth, Dimensional) y `EditableFieldset`.',
     'La primitiva atada a un TypePart: seis clases sacan `name` de `port.input` (Input, InputContainer, Get, FetchContainer, OutputContainer, Fieldset) y tres `execute` repiten el filtro `ref.type !== this.name`.',
     'Button: su contenido está fijo ("Click me", "HOLA", el div) en vez de salir de `port.input`; su caja lleva un elemento del DOM, y `button` no es un TypePart.',
     'Vocabulario de tipos: ¿`Action = Record<State, string>`, sin firma de índice? ¿`Verb` queda como documentación de las formas o se va?',

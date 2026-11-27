@@ -1,4 +1,2 @@
-// Primitivas del formulario: no pueden tener nada adentro.
-export * from './input'
-export * from './display'
-export * from './get'
+// Vacío por ahora: las primitivas que usa el formulario (Input, Display) están en html/.
+export {}

@@ -1,5 +1,5 @@
 /      {"appKids":1,"router":"contents","routerKids":1,"inputs":3,"fieldsets":0,"buttons":1,"dialogs":1} | warn: - | errores: ninguno
    input1=Ana → {"inputs":["Ana","","Ana"],"display":["Ana"]}
-/http  {"appKids":1,"router":"contents","routerKids":1,"inputs":0,"fieldsets":2,"buttons":1,"dialogs":1} | warn: - | errores: ninguno
+/http  {"appKids":1,"router":"contents","routerKids":1,"inputs":5,"fieldsets":4,"buttons":1,"dialogs":1} | warn: - | errores: ninguno
    click → {"outputs":{"name":"Av. 18 de Julio","door":"1234","city":"Montevideo","state":"Montevideo","zip":"11100"},"dialog":true,"msg":"'zip' no está en el catálogo"}
 /nada  {"appKids":1,"router":"contents","routerKids":0,"inputs":0,"fieldsets":0,"buttons":0,"dialogs":0} | warn: warning: router: ninguna página para '/nada' | errores: ninguno

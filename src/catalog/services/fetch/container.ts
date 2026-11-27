@@ -1,6 +1,6 @@
 import { Output, Port, TypePart } from 'core/types'
-import { HttpContainer } from 'catalog/http/core/http-container'
-import { actions } from 'catalog/http/core/types'
+import { HttpContainer } from 'catalog/services/core/http-container'
+import { actions } from 'catalog/services/core/types'
 
 /** Mock del backend, fijo: un catálogo ordenado por TypePart (raíz → sus partes). */
 const CATALOG = '/mock/catalog.json'
