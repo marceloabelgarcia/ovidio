@@ -1,5 +1,6 @@
 import { TriggerRelation, Action, Trigger } from 'core/types'
 
+/** El vocabulario del DOM: lo que sus sensores captan. Hoy `verb` es el nombre del evento. */
 export const actions: { [key: string]: Action } = {
     input: {
         verb: 'input',
@@ -19,25 +20,9 @@ export const actions: { [key: string]: Action } = {
         progress: 'changing',
         finished: 'changed',
     },
-    save: {
-        verb: 'save',
-        actor: 'system',
-        progress: 'saving',
-        finished: 'saved',
-    },
-    submit: {
-        verb: 'submit',
-        actor: 'system',
-        progress: 'submitting',
-        finished: 'submitted',
-    },
-    modify: {
-        verb: 'modify',
-        actor: 'system',
-        progress: 'modifying',
-        finished: 'modified',
-    },
 }
+
+// Borradores, guardados como semilla del vocabulario (ver plan/catalog.ts).
 
 export const trigger: Trigger = {
     action: {
@@ -56,15 +41,3 @@ export const relations: TriggerRelation[] =  [
             triggers: [{ action: actions.child, state: 'finished' }],
         },
     ]
-
-
-export const output: TriggerRelation[] = [
-    {
-        trigger: { action: actions.modify, state: 'finished' },
-        triggers: [{ action: actions.change, state: 'finished' }],
-    },
-    {
-        trigger: { action: actions.save, state: 'finished' },
-        triggers: [{ action: actions.submit, state: 'finished' }],
-    },
-]
